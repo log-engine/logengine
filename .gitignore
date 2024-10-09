@@ -1,0 +1,34 @@
+.tmp/
+.bin/
+.stamp/
+
+.idea/
+.vscode/settings.json
+.vscode
+*.code-workspace
+.DS_Store
+.coverage
+.testoutput
+
+*.out
+*.test
+*.xml
+*.swp
+/*.iml
+*.cov
+*.html
+/test.log
+
+# proto image
+/proto/image.bin
+# api+google proto dependencies
+/proto/api.binpb
+
+# Goreleaser
+/dist
+
+# direnv
+.envrc
+
+# Git SPR: https://github.com/ejoffe/spr
+.spr.yml
