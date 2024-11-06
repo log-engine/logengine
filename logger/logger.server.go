@@ -1,4 +1,4 @@
-package loggerserver
+package logger
 
 import "github.com/log-engine/logengine/logger-definitions"
 

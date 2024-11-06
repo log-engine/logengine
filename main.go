@@ -17,7 +17,7 @@ func main() {
 		log.Fatalf("can't create listener %s", err)
 	}
 
-	fmt.Printf("logger-engine open port %s", lis.Addr())
+	fmt.Printf("logger-engine open port %s \n", lis.Addr())
 
 	loggerRegistrar := grpc.NewServer()
 
@@ -28,7 +28,5 @@ func main() {
 	if err := loggerRegistrar.Serve(lis); err != nil {
 		log.Fatalf("can't serve %s", err)
 	}
-
-	fmt.Printf("logger-engine grpc server is running on %s", lis.Addr())
 
 }
