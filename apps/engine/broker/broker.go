@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/log-engine/logengine/logger-definitions"
 	amqp "github.com/rabbitmq/amqp091-go"
+	logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 type Broker struct {
@@ -46,7 +46,7 @@ func initChannel(conn *amqp.Connection) *amqp.Channel {
 	return ch
 }
 
-func (b *Broker) NewLog(queueName string, log *logger.Log) error {
+func (b *Broker) NewLog(queueName string, log *logengine_grpc.Log) error {
 	queue, err := b.ch.QueueDeclare(
 		queueName,
 		true,

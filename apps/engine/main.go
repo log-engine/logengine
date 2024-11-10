@@ -5,9 +5,9 @@ import (
 	"log"
 	"net"
 
-	loggerserver "github.com/log-engine/logengine/logger"
-	"github.com/log-engine/logengine/logger-definitions"
 	"google.golang.org/grpc"
+	"logengine.grpc/logger"
+	logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 func main() {
@@ -21,9 +21,9 @@ func main() {
 
 	loggerRegistrar := grpc.NewServer()
 
-	loggerServer := &loggerserver.LoggerServer{}
+	loggerServer := &logger.LoggerServer{}
 
-	logger.RegisterLoggerServer(loggerRegistrar, loggerServer)
+	logengine_grpc.RegisterLoggerServer(loggerRegistrar, loggerServer)
 
 	if err := loggerRegistrar.Serve(lis); err != nil {
 		log.Fatalf("can't serve %s", err)

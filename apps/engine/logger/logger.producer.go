@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/log-engine/logengine/broker"
-	"github.com/log-engine/logengine/logger-definitions"
+	"logengine.grpc/broker"
+	logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 type LogProducer struct {
@@ -19,12 +19,12 @@ func NewLogProducer() *LogProducer {
 }
 
 func (lp *LogProducer) init() {
-	rbUri := "amqp://guest:guest@localhost:5672/"
+	rbUri := ""
 	lp.broker = broker.NewBroker(rbUri)
 	log.Println("producer broker is init successfully")
 }
 
-func (lp *LogProducer) Produce(log *logger.Log) {
+func (lp *LogProducer) Produce(log *logengine_grpc.Log) {
 
 	fmt.Println(lp.broker)
 
