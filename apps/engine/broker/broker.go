@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	logengine_grpc "logengine/apps/engine/logger-definitions"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 type Broker struct {

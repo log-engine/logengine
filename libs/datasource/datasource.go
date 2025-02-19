@@ -10,7 +10,7 @@ import (
 type Datasource struct {
 	uri    string
 	driver string
-	db     *sql.DB
+	Db     *sql.DB
 }
 
 func NewDatasource(uri string, driver string) *Datasource {
@@ -44,9 +44,9 @@ func (ds *Datasource) init() {
 		panic(err)
 	}
 
-	ds.db = db
+	ds.Db = db
 
-	runDDL(engineDDL, ds.db)
+	runDDL(engineDDL, ds.Db)
 }
 
 func runDDL(ddlSQL string, db *sql.DB) {

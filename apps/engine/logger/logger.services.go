@@ -3,8 +3,8 @@ package logger
 import (
 	"context"
 	"fmt"
-
-	logengine_grpc "logengine.grpc/logger-definitions"
+	logengine_grpc "logengine/apps/engine/logger-definitions"
+	// logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 var producer = NewLogProducer()

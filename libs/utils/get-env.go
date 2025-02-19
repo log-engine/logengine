@@ -6,6 +6,7 @@ import (
 )
 
 func GetEnv(key string) string {
+
 	value := os.Getenv(key)
 
 	if value == "" {

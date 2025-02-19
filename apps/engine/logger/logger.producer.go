@@ -3,9 +3,13 @@ package logger
 import (
 	"fmt"
 	"log"
-
-	"logengine.grpc/broker"
-	logengine_grpc "logengine.grpc/logger-definitions"
+	"logengine/apps/engine/broker"
+	logengine_grpc "logengine/apps/engine/logger-definitions"
+	"logengine/libs/utils"
+	"os"
+	// "logengine.grpc/broker"
+	// logengine_grpc "logengine.grpc/logger-definitions"
+	// logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 type LogProducer struct {
@@ -19,7 +23,8 @@ func NewLogProducer() *LogProducer {
 }
 
 func (lp *LogProducer) init() {
-	rbUri := ""
+	fmt.Printf("rabbit url", os.Getenv("RABBITMQ_URI"))
+	rbUri := utils.GetEnv("RABBITMQ_URI")
 	lp.broker = broker.NewBroker(rbUri)
 	log.Println("producer broker is init successfully")
 }

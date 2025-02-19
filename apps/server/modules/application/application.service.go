@@ -21,11 +21,11 @@ func NewApplicationService(db *sql.DB) *ApplicationService {
 func (s *ApplicationService) Find(inputs *FindApplicationInputs) *[]ApplicationEntity {
 	apps := &[]ApplicationEntity{}
 
-	query := "select id, name, createdAt, updatedAt from app where id in(?) and name like ?"
+	query := "select id, name,key from app where id in(?) and name like ?"
 
 	fmt.Printf("find application with inputs %v, query %s\n", inputs, query)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
 
@@ -40,7 +40,7 @@ func (s *ApplicationService) Find(inputs *FindApplicationInputs) *[]ApplicationE
 	for rows.Next() {
 		app := &ApplicationEntity{}
 
-		if err = rows.Scan(app.Id, app.Name, app.CreatedAt, app.UpdatedAt); err != nil {
+		if err = rows.Scan(&app.Id, &app.Name, &app.Key); err != nil {
 			log.Fatalf("scan app error %v\n", err)
 		}
 
@@ -48,4 +48,38 @@ func (s *ApplicationService) Find(inputs *FindApplicationInputs) *[]ApplicationE
 	}
 
 	return apps
+}
+
+func (s *ApplicationService) Create(inputs *CreateApplicationInputs) *ApplicationEntity {
+	query := "insert into app(name,admin) values(?,?)"
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+
+	rows, err := s.datasource.ExecContext(ctx, query, inputs.Name, inputs.Admin)
+
+	if err != nil {
+		log.Fatalf("can't create new app %s", err)
+	}
+
+	query = "select id,key,name from app where id = ?"
+
+	ctx, cancel = context.WithTimeout(context.Background(), 1*time.Second)
+
+	defer cancel()
+
+	lastId, err := rows.LastInsertId()
+	if err != nil {
+		log.Fatalf("failed to get last insert id: %v", err)
+	}
+
+	row := s.datasource.QueryRowContext(ctx, query, lastId)
+
+	app := &ApplicationEntity{}
+	if err := row.Scan(&app.Id, &app.Key, &app.Name); err != nil {
+		log.Fatalf("failed to scan application: %v", err)
+	}
+
+	return app
 }

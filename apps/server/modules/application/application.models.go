@@ -1,25 +1,27 @@
 package application
 
-import "time"
-
 type FindApplicationInputs struct {
-	Q string 
+	Q   string
 	Ids []string
 }
 
+type CreateApplicationInputs struct {
+	Name  string
+	Admin string
+}
+
 type ApplicationEntity struct {
-	Id string
+	Id   string
 	Name string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Key  string
 }
 
 type ApplicationToAdd struct {
-	Name string
+	Name  string
 	Admin string
 }
 
 type ApplicationToEdit struct {
-	Id string
+	Id   string
 	Name string
 }

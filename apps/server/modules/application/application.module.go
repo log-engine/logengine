@@ -16,10 +16,12 @@ func NewApplicationModule(db *sql.DB, router *gin.Engine) *ApplicationModule {
 }
 
 func (appM *ApplicationModule) Bootstrap() {
+
 	r := appM.router.Group("applications")
 
 	appService := NewApplicationService(appM.db)
 	appController := NewApplicationController(appM.router, appService)
 
 	r.GET("/", appController.FindApps)
+	r.POST("/", appController.CreateApp)
 }
