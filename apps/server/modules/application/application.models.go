@@ -5,20 +5,14 @@ type FindApplicationInputs struct {
 	Ids []string
 }
 
-type CreateApplicationInputs struct {
-	Name  string
-	Admin string
-}
-
 type ApplicationEntity struct {
-	Id   string
-	Name string
-	Key  string
+	Id   string `json:"id"`
+	Name string `json:"name"`
+	Key  string `json:"key"`
 }
 
 type ApplicationToAdd struct {
-	Name  string
-	Admin string
+	Name string `json:"name"`
 }
 
 type ApplicationToEdit struct {

@@ -28,9 +28,18 @@ func main() {
 
 	loggerRegistrar := grpc.NewServer()
 
-	loggerServer := &logger.LoggerServer{}
+	logProducer := logger.NewLogProducer()
+
+	logProducer.Init()
+
+	loggerServer := logger.NewLoggerServer(logProducer)
 
 	logengine_grpc.RegisterLoggerServer(loggerRegistrar, loggerServer)
+
+	loggerConsumer := logger.NewLogConsumer()
+	loggerConsumer.Init()
+
+	loggerConsumer.Consume()
 
 	if err := loggerRegistrar.Serve(lis); err != nil {
 		log.Fatalf("can't serve %s", err)

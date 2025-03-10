@@ -1,12 +1,12 @@
 package logger
 
 import (
-	"fmt"
 	"log"
 	"logengine/apps/engine/broker"
 	logengine_grpc "logengine/apps/engine/logger-definitions"
 	"logengine/libs/utils"
-	"os"
+
+	"github.com/joho/godotenv"
 	// "logengine.grpc/broker"
 	// logengine_grpc "logengine.grpc/logger-definitions"
 	// logengine_grpc "logengine.grpc/logger-definitions"
@@ -18,24 +18,25 @@ type LogProducer struct {
 
 func NewLogProducer() *LogProducer {
 	lp := &LogProducer{}
-	lp.init()
 	return lp
 }
 
-func (lp *LogProducer) init() {
-	fmt.Printf("rabbit url", os.Getenv("RABBITMQ_URI"))
+func (lp *LogProducer) Init() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("can't load .env file %s", err)
+	}
+
 	rbUri := utils.GetEnv("RABBITMQ_URI")
 	lp.broker = broker.NewBroker(rbUri)
+	lp.broker.Init()
 	log.Println("producer broker is init successfully")
 }
 
-func (lp *LogProducer) Produce(log *logengine_grpc.Log) {
+func (lp *LogProducer) Produce(newLog *logengine_grpc.Log) {
 
-	fmt.Println(lp.broker)
-
-	err := lp.broker.NewLog(broker.LOG_QUEUE, log)
+	err := lp.broker.NewLog(newLog)
 
 	if err != nil {
-		panic(err)
+		log.Printf("can't publish log %s", err)
 	}
 }

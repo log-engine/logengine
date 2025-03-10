@@ -2,6 +2,7 @@ package application
 
 import (
 	"database/sql"
+	"logengine/apps/server/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,11 +18,16 @@ func NewApplicationModule(db *sql.DB, router *gin.Engine) *ApplicationModule {
 
 func (appM *ApplicationModule) Bootstrap() {
 
-	r := appM.router.Group("applications")
+	userGroupRouter := appM.router.Group("applications")
+	adminGroupRouter := appM.router.Group("applications")
+
+	userGroupRouter.Use(middleware.Authorization(appM.db))
+	adminGroupRouter.Use(middleware.Authorization(appM.db))
+	adminGroupRouter.Use(middleware.IsAdmin(appM.db))
 
 	appService := NewApplicationService(appM.db)
 	appController := NewApplicationController(appM.router, appService)
 
-	r.GET("/", appController.FindApps)
-	r.POST("/", appController.CreateApp)
+	userGroupRouter.GET("/", appController.FindApps)
+	adminGroupRouter.POST("/", appController.CreateApp)
 }

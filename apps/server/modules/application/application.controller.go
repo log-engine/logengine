@@ -3,8 +3,10 @@ package application
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	appTyping "logengine/apps/server/modules/app-typing"
 	logengineHTTP "logengine/apps/server/modules/http"
+	"logengine/apps/server/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,18 +43,22 @@ func (c *ApplicationController) FindApps(ctx *gin.Context) {
 }
 
 func (c *ApplicationController) CreateApp(ctx *gin.Context) {
-	var expectedBody CreateApplicationInputs
+	var expectedBody ApplicationToAdd
 
-	if err := ctx.BindJSON(expectedBody); err != nil {
+	if err := ctx.ShouldBindJSON(&expectedBody); err != nil {
+		log.Printf("can't bind request body %v \n", err)
 		badReq := appTyping.BadRequest{Code: "BAD_REQUEST", Message: "invalid inputs"}
-		data, _ := json.Marshal(badReq)
-		ctx.Data(http.StatusBadRequest, "application/json", data)
+		ctx.JSON(http.StatusBadRequest, badReq)
+		return
 	}
 
-	app := c.service.Create(&expectedBody)
+	app, err := c.service.Create(&expectedBody, ctx.MustGet("me").(types.User))
 
-	data, _ := json.Marshal(app)
+	if err != nil {
+		badReq := appTyping.BadRequest{Code: "BAD_REQUEST", Message: "invalid inputs"}
+		ctx.JSON(http.StatusBadRequest, badReq)
+	}
 
-	ctx.Data(http.StatusOK, "application/json", data)
+	ctx.JSON(http.StatusOK, app)
 
 }

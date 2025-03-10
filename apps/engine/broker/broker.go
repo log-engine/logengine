@@ -1,52 +1,61 @@
 package broker
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	logengine_grpc "logengine/apps/engine/logger-definitions"
-	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+)
+
+const (
+	LOG_QUEUE    = "log.new"
+	LOG_EXCHANGE = "log"
 )
 
 type Broker struct {
 	uri  string
 	conn *amqp.Connection
 	ch   *amqp.Channel
+	q    *amqp.Queue
 }
 
 func NewBroker(uri string) *Broker {
 	b := &Broker{uri: uri}
-	b.init()
 	return b
 }
 
-func (b *Broker) init() {
+func (b *Broker) Init() {
 	conn, err := amqp.Dial(b.uri)
 
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
 
-	// don't forget to close the connection
-	// defer conn.Close()
+	log.Println("connected to rabbitmq successfully")
+
 	b.conn = conn
 
-	b.ch = initChannel(conn)
-	// defer b.ch.Close()
+	b.initChannel()
+
+	b.ch.ExchangeDeclare(LOG_EXCHANGE, "direct", true, false, false, false, nil)
+
+	b.initQueue(LOG_QUEUE)
+
+	b.ch.ExchangeBind(LOG_QUEUE, LOG_EXCHANGE, LOG_QUEUE, false, nil)
 }
 
-func initChannel(conn *amqp.Connection) *amqp.Channel {
-	ch, err := conn.Channel()
+func (b *Broker) initChannel() {
+	ch, err := b.conn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %v", err)
 	}
-	return ch
+	log.Printf("channel %v opened successfully", ch)
+	b.ch = ch
 }
 
-func (b *Broker) NewLog(queueName string, log *logengine_grpc.Log) error {
+func (b *Broker) initQueue(queueName string) error {
 	queue, err := b.ch.QueueDeclare(
 		queueName,
 		true,
@@ -56,41 +65,54 @@ func (b *Broker) NewLog(queueName string, log *logengine_grpc.Log) error {
 		nil,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to declare a queue: %v", err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	log.Printf("queue %v declared successfully", queue)
 
-	body, err := json.Marshal(log)
+	b.q = &queue
+	return nil
+}
+
+func (b *Broker) NewLog(lnewLog *logengine_grpc.Log) error {
+
+	body, err := json.Marshal(lnewLog)
 	if err != nil {
 		return err
 	}
-	fmt.Println("new message published on queue", queue.Name)
-	return b.ch.PublishWithContext(ctx, "", queue.Name, false, false, amqp.Publishing{
+
+	log.Printf("new message to publish channel %v", b.ch)
+
+	err = b.ch.Publish(LOG_EXCHANGE, LOG_QUEUE, false, true, amqp.Publishing{
 		ContentType: "application/json",
 		Body:        body,
 	})
+	if err != nil {
+		return fmt.Errorf("failed to publish message: %v", err)
+	}
+
+	log.Printf("new message published on queue %v", LOG_QUEUE)
+
+	return nil
 }
 
-func (b *Broker) ConsumeLog(queueName string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	msgs, err := b.ch.ConsumeWithContext(ctx, queueName, "", true, false, false, false, nil)
+func (b *Broker) ConsumeLog() error {
+	msgs, err := b.ch.Consume(LOG_QUEUE, LOG_QUEUE, true, false, false, false, nil)
 	if err != nil {
 		return err
 	}
 
+	errChan := make(chan error)
+
 	go func() {
 		for msg := range msgs {
-			fmt.Println("new message received from queue", queueName)
+			fmt.Println("new message received from queue", LOG_QUEUE)
 			fmt.Println(string(msg.Body))
-
+			// Si une erreur se produit, vous pouvez la capturer ici
+			// errChan <- someError
 		}
 	}()
 
-	<-ctx.Done()
-
-	return nil
+	// Vous pouvez retourner une erreur si elle est reçue sur errChan
+	return <-errChan
 }
