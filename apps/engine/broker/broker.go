@@ -27,15 +27,13 @@ func NewBroker(uri string) *Broker {
 }
 
 func (b *Broker) Init() {
-	conn, err := amqp.Dial(b.uri)
+	var err error
+
+	b.conn, err = amqp.Dial(b.uri)
 
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
-
-	log.Println("connected to rabbitmq successfully")
-
-	b.conn = conn
 
 	b.initChannel()
 
@@ -43,16 +41,20 @@ func (b *Broker) Init() {
 
 	b.initQueue(LOG_QUEUE)
 
-	b.ch.ExchangeBind(LOG_QUEUE, LOG_EXCHANGE, LOG_QUEUE, false, nil)
+	b.ch.QueueBind(LOG_QUEUE, LOG_QUEUE, LOG_EXCHANGE, false, nil)
+
+	log.Println("connected to rabbitmq successfully")
 }
 
 func (b *Broker) initChannel() {
-	ch, err := b.conn.Channel()
+	var err error
+
+	b.ch, err = b.conn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %v", err)
 	}
-	log.Printf("channel %v opened successfully", ch)
-	b.ch = ch
+	log.Printf("channel is closed ? '%v'", b.ch.IsClosed())
+
 }
 
 func (b *Broker) initQueue(queueName string) error {
@@ -75,15 +77,18 @@ func (b *Broker) initQueue(queueName string) error {
 }
 
 func (b *Broker) NewLog(lnewLog *logengine_grpc.Log) error {
+	if b.conn == nil || b.ch == nil {
+		log.Printf("connection or channel is not open")
+	}
 
 	body, err := json.Marshal(lnewLog)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("new message to publish channel %v", b.ch)
+	log.Printf("new message to publish %v", lnewLog)
 
-	err = b.ch.Publish(LOG_EXCHANGE, LOG_QUEUE, false, true, amqp.Publishing{
+	err = b.ch.Publish(LOG_EXCHANGE, LOG_QUEUE, false, false, amqp.Publishing{
 		ContentType: "application/json",
 		Body:        body,
 	})
@@ -91,12 +96,14 @@ func (b *Broker) NewLog(lnewLog *logengine_grpc.Log) error {
 		return fmt.Errorf("failed to publish message: %v", err)
 	}
 
-	log.Printf("new message published on queue %v", LOG_QUEUE)
-
 	return nil
 }
 
 func (b *Broker) ConsumeLog() error {
+	if b.conn == nil || b.ch == nil {
+		return fmt.Errorf("connection or channel is not open")
+	}
+
 	msgs, err := b.ch.Consume(LOG_QUEUE, LOG_QUEUE, true, false, false, false, nil)
 	if err != nil {
 		return err
@@ -106,8 +113,8 @@ func (b *Broker) ConsumeLog() error {
 
 	go func() {
 		for msg := range msgs {
-			fmt.Println("new message received from queue", LOG_QUEUE)
-			fmt.Println(string(msg.Body))
+			log.Printf("new message received from queue %v , %v", LOG_QUEUE, string(msg.Body))
+
 			// Si une erreur se produit, vous pouvez la capturer ici
 			// errChan <- someError
 		}

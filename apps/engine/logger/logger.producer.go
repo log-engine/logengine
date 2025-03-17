@@ -34,9 +34,7 @@ func (lp *LogProducer) Init() {
 
 func (lp *LogProducer) Produce(newLog *logengine_grpc.Log) {
 
-	err := lp.broker.NewLog(newLog)
-
-	if err != nil {
+	if err := lp.broker.NewLog(newLog); err != nil {
 		log.Printf("can't publish log %s", err)
 	}
 }

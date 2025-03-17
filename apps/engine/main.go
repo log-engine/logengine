@@ -39,10 +39,15 @@ func main() {
 	loggerConsumer := logger.NewLogConsumer()
 	loggerConsumer.Init()
 
-	loggerConsumer.Consume()
+	go func() {
+		log.Println("start consuming")
+		loggerConsumer.Consume()
+	}()
 
 	if err := loggerRegistrar.Serve(lis); err != nil {
 		log.Fatalf("can't serve %s", err)
 	}
+
+	log.Printf("server started ...")
 
 }
