@@ -7,9 +7,6 @@ import (
 	"logengine/libs/utils"
 
 	"github.com/joho/godotenv"
-	// "logengine.grpc/broker"
-	// logengine_grpc "logengine.grpc/logger-definitions"
-	// logengine_grpc "logengine.grpc/logger-definitions"
 )
 
 type LogProducer struct {

@@ -11,6 +11,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	gin.SetMode(gin.DebugMode)
 
 	r.Use(middleware.RequestLogger())
 

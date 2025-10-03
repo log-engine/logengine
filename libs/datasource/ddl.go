@@ -6,7 +6,7 @@ create table if not exists "user" (
     username varchar(100) not null unique,
     password varchar not null,
     role varchar(100) not null,
-    apps json[],
+    apps json,
     "createdAt" timestamp not null default current_timestamp,
     "updatedAt" timestamp not null default current_timestamp,
     "addedBy" varchar references "user" (id)

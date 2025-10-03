@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"log"
 	"logengine/apps/server/middleware"
 	"logengine/libs/datasource"
 	"logengine/libs/utils"
@@ -34,6 +35,8 @@ func (appM *UserModule) Bootstrap() {
 		Role:     datasource.ADMINROLE,
 		Apps:     []string{},
 	}
+
+	log.Printf("create admin info: %v", createAdminPayload)
 
 	appService.CreateUser(&createAdminPayload, "")
 

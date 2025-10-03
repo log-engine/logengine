@@ -1,11 +1,17 @@
 package broker
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	logengine_grpc "logengine/apps/engine/logger-definitions"
+	"logengine/libs/datasource"
+	"logengine/libs/utils"
+	"time"
 
+	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -19,6 +25,7 @@ type Broker struct {
 	conn *amqp.Connection
 	ch   *amqp.Channel
 	q    *amqp.Queue
+	DB   *sql.DB
 }
 
 func NewBroker(uri string) *Broker {
@@ -42,6 +49,11 @@ func (b *Broker) Init() {
 	b.initQueue(LOG_QUEUE)
 
 	b.ch.QueueBind(LOG_QUEUE, LOG_QUEUE, LOG_EXCHANGE, false, nil)
+
+	dbUrl := utils.GetEnv("DB_URI")
+	database := datasource.NewDatasource(dbUrl, "postgres")
+
+	b.DB = database.Db
 
 	log.Println("connected to rabbitmq successfully")
 }
@@ -115,8 +127,38 @@ func (b *Broker) ConsumeLog() error {
 		for msg := range msgs {
 			log.Printf("new message received from queue %v , %v", LOG_QUEUE, string(msg.Body))
 
-			// Si une erreur se produit, vous pouvez la capturer ici
-			// errChan <- someError
+			var newLog logengine_grpc.Log
+			err := json.Unmarshal(msg.Body, &newLog)
+			if err != nil {
+				log.Printf("failed to unmarshal message: %v", err)
+				errChan <- err
+				continue
+			}
+
+			const query = `insert into log (id, level, pid, hostname, ts, message, "appId") values ($1, $2, $3, $4, $5, $6, $7)`
+
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+			defer cancel()
+
+			loc, _ := time.LoadLocation("UTC")
+
+			ts, err := time.ParseInLocation("2006-01-02T15:04:05.000Z", newLog.Ts, loc)
+
+			if err != nil {
+				log.Printf("Error parsing date: %v", err)
+			}
+
+			r, err := b.DB.ExecContext(ctx, query, uuid.New().String(), newLog.Level, newLog.Pid, newLog.Hostname, ts, newLog.Message, newLog.AppId)
+
+			if err != nil {
+				log.Printf("failed to insert log: %v", err)
+				errChan <- err
+				continue
+			}
+
+			log.Printf("log inserted successfully: %v", r)
+
 		}
 	}()
 
