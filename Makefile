@@ -81,6 +81,7 @@ setup:
 	@echo ""
 	@echo "Projet configuré!"
 	@echo "Modifie le fichier .env si nécessaire, puis lance:"
+	@echo "  make generate_proto   (Générer les fichiers protobuf)"
 	@echo "  make run_grpc_server  (Terminal 1)"
 	@echo "  make run_http_server  (Terminal 2)"
 

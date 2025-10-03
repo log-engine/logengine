@@ -32,10 +32,13 @@ cd logengine
 # 2. Configuration automatique (installe les dépendances, démarre Docker)
 make setup
 
-# 3. Terminal 1 : Serveur gRPC
+# 3. Générer les fichiers protobuf
+make generate_proto
+
+# 4. Terminal 1 : Serveur gRPC
 make run_grpc_server
 
-# 4. Terminal 2 : Serveur HTTP
+# 5. Terminal 2 : Serveur HTTP
 make run_http_server
 ```
 
