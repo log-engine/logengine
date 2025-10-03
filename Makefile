@@ -19,7 +19,7 @@ run_grpc_server:
 fmt:
 	@echo "Formatage du code Go..."
 	@gofmt -w .
-	@$(shell go env GOPATH)/bin/goimports -w -local logengine .
+	@$(shell go env GOPATH)/.bin/goimports -w -local logengine .
 	@echo "✅ Code formaté!"
 
 # Vérification du formatage
@@ -41,9 +41,9 @@ install-tools:
 # Build des deux serveurs
 build:
 	@echo "Compilation du serveur HTTP..."
-	go build -o bin/http-server ./apps/server/main.go
+	go build -o .bin/http-server ./apps/server/main.go
 	@echo "Compilation du serveur gRPC..."
-	go build -o bin/grpc-server ./apps/engine/main.go
+	go build -o .bin/grpc-server ./apps/engine/main.go
 	@echo "✅ Build terminé!"
 
 # Tests
@@ -54,7 +54,7 @@ test:
 # Clean
 clean:
 	@echo "Nettoyage..."
-	rm -rf bin/
+	rm -rf .bin/
 	go clean
 
 # Docker

@@ -1,10 +1,6 @@
 .tmp/
-.bin/
 .stamp/
-
 .idea/
-.vscode/settings.json
-.vscode
 *.code-workspace
 .DS_Store
 .coverage
@@ -36,3 +32,6 @@
 *.pb.go
 
 .env
+.claude
+.bin
+
