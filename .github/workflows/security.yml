@@ -1,0 +1,70 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run every Monday at 9am
+    - cron: '0 9 * * 1'
+
+jobs:
+  # Go dependencies audit
+  go-audit:
+    name: Go Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Run govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  # NPM Admin UI audit
+  npm-admin-audit:
+    name: NPM Admin Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/ui/admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+  # NPM Landing Page audit
+  npm-landing-audit:
+    name: NPM Landing Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/ui/landing-page
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
