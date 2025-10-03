@@ -17,6 +17,36 @@ updates:
       prefix: "deps"
       include: "scope"
 
+  # NPM - Admin UI
+  - package-ecosystem: "npm"
+    directory: "/apps/ui/admin"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "security"
+    commit-message:
+      prefix: "deps(admin)"
+      include: "scope"
+
+  # NPM - Landing Page
+  - package-ecosystem: "npm"
+    directory: "/apps/ui/landing-page"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "security"
+    commit-message:
+      prefix: "deps(landing)"
+      include: "scope"
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"

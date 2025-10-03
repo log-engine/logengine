@@ -67,3 +67,20 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Node.js (Frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Frontend build
+dist/
+build/
+.next/
+out/
+.cache/
+
