@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🧪 Tests LogEngine"
+echo "Tests LogEngine"
 echo "=================="
 echo ""
 
@@ -23,16 +23,16 @@ APP_KEY=""
 
 # Fonctions utilitaires
 success() {
-    echo -e "${GREEN}✓${NC} $1"
+    echo -e "${GREEN}[OK]${NC} $1"
 }
 
 error() {
-    echo -e "${RED}✗${NC} $1"
+    echo -e "${RED}[ERREUR]${NC} $1"
     exit 1
 }
 
 info() {
-    echo -e "${YELLOW}ℹ${NC} $1"
+    echo -e "${YELLOW}[INFO]${NC} $1"
 }
 
 # Vérifier que les serveurs tournent

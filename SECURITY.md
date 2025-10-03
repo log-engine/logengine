@@ -2,10 +2,10 @@
 
 ## Versions supportées
 
-| Version | Supportée          |
-| ------- | ------------------ |
-| main    | :white_check_mark: |
-| < 1.0   | :x:                |
+| Version | Supportée |
+| ------- | --------- |
+| main    | Oui       |
+| < 1.0   | Non       |
 
 ## Signaler une vulnérabilité
 
@@ -40,14 +40,14 @@ Nous suivons une politique de divulgation coordonnée :
 
 ### Pour les utilisateurs
 
-- ✅ Utilisez toujours la dernière version
-- ✅ Activez HTTPS/TLS pour les connexions gRPC en production
-- ✅ Changez les mots de passe par défaut
-- ✅ Limitez l'accès réseau (firewall)
-- ✅ Activez l'authentification sur RabbitMQ et PostgreSQL
-- ✅ Utilisez des secrets managers pour les credentials (Vault, AWS Secrets Manager)
-- ✅ Activez les logs d'audit
-- ✅ Configurez le rate limiting selon vos besoins
+- Utilisez toujours la dernière version
+- Activez HTTPS/TLS pour les connexions gRPC en production
+- Changez les mots de passe par défaut
+- Limitez l'accès réseau (firewall)
+- Activez l'authentification sur RabbitMQ et PostgreSQL
+- Utilisez des secrets managers pour les credentials (Vault, AWS Secrets Manager)
+- Activez les logs d'audit
+- Configurez le rate limiting selon vos besoins
 
 ### Configuration sécurisée
 

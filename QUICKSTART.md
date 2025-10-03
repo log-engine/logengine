@@ -132,7 +132,7 @@ curl -X POST http://localhost:8080/api/applications \
 }
 ```
 
-**⚠️ Copie la `key`, tu en auras besoin pour envoyer des logs !**
+**IMPORTANT: Copie la `key`, tu en auras besoin pour envoyer des logs.**
 
 ### 3. Envoyer un log via gRPC
 
@@ -379,4 +379,4 @@ kill -9 <PID>
 3. **Metrics** : Implémenter le système de monitoring
 4. **Tests** : Ajouter des tests unitaires et d'intégration
 
-**Bon développement ! 🚀**
+**Bon développement !**

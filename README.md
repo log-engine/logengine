@@ -1,21 +1,21 @@
-# LogEngine 🚀
+# LogEngine
 
 **Système de collecte et gestion de logs centralisé, open-source, léger et performant.**
 
 Alternative self-hosted à Sentry, Datadog ou Loggly pour surveiller vos applications en temps réel.
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
-- 📊 **Collecte de logs** via gRPC (haute performance)
-- 🔐 **Authentification** par clé API
-- 🛡️ **Rate limiting** (protection anti-spam)
-- 🔄 **Retry logic** avec backoff exponentiel
-- 💾 **Stockage PostgreSQL** robuste
-- 🐰 **Queue RabbitMQ** pour traitement asynchrone
-- 🎯 **Graceful shutdown** (aucune perte de données)
-- 🎨 **Interface admin** React (à venir)
+- **Collecte de logs** via gRPC (haute performance)
+- **Authentification** par clé API
+- **Rate limiting** (protection anti-spam)
+- **Retry logic** avec backoff exponentiel
+- **Stockage PostgreSQL** robuste
+- **Queue RabbitMQ** pour traitement asynchrone
+- **Graceful shutdown** (aucune perte de données)
+- **Interface admin** React (à venir)
 
-## 🚀 Démarrage rapide (5 minutes)
+## Démarrage rapide (5 minutes)
 
 ### Prérequis
 
@@ -39,18 +39,18 @@ make run_grpc_server
 make run_http_server
 ```
 
-🎉 **C'est prêt !** Les serveurs tournent sur :
+ **C'est prêt !** Les serveurs tournent sur :
 - HTTP API : `http://localhost:8080`
 - gRPC : `localhost:30001`
 - RabbitMQ UI : `http://localhost:15672` (guest/guest)
 
-## 📖 Documentation
+##  Documentation
 
 - **[Guide de démarrage](QUICKSTART.md)** - Installation détaillée et premiers pas
 - **[Guide de contribution](CONTRIBUTING.md)** - Standards de code et formatage
 - **[Architecture](docs/ARCHITECTURE.md)** - Comment ça marche (à venir)
 
-## 🧪 Tester le système
+## Tester le système
 
 ```bash
 # Tests automatisés complets
@@ -60,7 +60,7 @@ make test-system
 make test
 ```
 
-## 🛠️ Commandes principales
+##  Commandes principales
 
 ```bash
 make help              # Affiche toutes les commandes disponibles
@@ -71,7 +71,7 @@ make fmt               # Formate le code
 make lint              # Analyse du code
 ```
 
-## 📊 Utilisation basique
+## Utilisation basique
 
 ### 1. Créer une application
 
@@ -104,7 +104,7 @@ grpcurl -plaintext \
 psql logengine -c "SELECT * FROM log ORDER BY ts DESC LIMIT 10;"
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 Client → gRPC Server → RabbitMQ → Consumer → PostgreSQL
@@ -119,15 +119,15 @@ Client → gRPC Server → RabbitMQ → Consumer → PostgreSQL
 - **RabbitMQ** : Queue pour traitement asynchrone
 - **PostgreSQL** : Stockage persistant
 
-## 🔒 Production-Ready
+##  Production-Ready
 
-✅ **Retry logic** : Reconnexion automatique si RabbitMQ/PostgreSQL down
-✅ **Rate limiting** : 1000 logs/s par app, 100 req/s par IP
-✅ **Graceful shutdown** : Aucune perte de logs lors des redémarrages
-✅ **Validation** : Vérification stricte des données d'entrée
-✅ **Formatage** : Code standardisé avec gofmt + goimports
+**Retry logic** : Reconnexion automatique si RabbitMQ/PostgreSQL down
+**Rate limiting** : 1000 logs/s par app, 100 req/s par IP
+**Graceful shutdown** : Aucune perte de logs lors des redémarrages
+**Validation** : Vérification stricte des données d'entrée
+**Formatage** : Code standardisé avec gofmt + goimports
 
-## 🤝 Contribution
+##  Contribution
 
 Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les guidelines.
 
@@ -142,10 +142,10 @@ make lint
 make test
 ```
 
-## 📝 License
+##  License
 
 MIT
 
-## 🙏 Credits
+##  Credits
 
 Développé avec ❤️ par la communauté LogEngine
