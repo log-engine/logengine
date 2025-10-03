@@ -1,8 +1,9 @@
 package user
 
 import (
-	"logengine/apps/server/types"
 	"net/http"
+
+	"logengine/apps/server/types"
 
 	"github.com/gin-gonic/gin"
 )

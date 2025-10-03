@@ -2,6 +2,7 @@ package application
 
 import (
 	"database/sql"
+
 	"logengine/apps/server/middleware"
 
 	"github.com/gin-gonic/gin"

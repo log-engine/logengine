@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"logengine/apps/engine/logger"
 	logengine_grpc "logengine/apps/engine/logger-definitions"
-	"net"
 
 	"google.golang.org/grpc"
 	// "logengine.grpc/logger"
@@ -44,15 +50,54 @@ func main() {
 	loggerConsumer := logger.NewLogConsumer()
 	loggerConsumer.Init()
 
+	// Canal pour gérer le graceful shutdown
+	shutdownChan := make(chan os.Signal, 1)
+	signal.Notify(shutdownChan, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+
 	go func() {
 		log.Println("start consuming")
 		loggerConsumer.Consume()
 	}()
 
-	if err := loggerRegistrar.Serve(lis); err != nil {
-		log.Fatalf("can't serve %s", err)
+	// Serveur gRPC dans une goroutine
+	go func() {
+		log.Printf("gRPC server started on %s", lis.Addr())
+		if err := loggerRegistrar.Serve(lis); err != nil {
+			log.Fatalf("can't serve %s", err)
+		}
+	}()
+
+	// Attendre le signal de shutdown
+	sig := <-shutdownChan
+	log.Printf("Received signal %v, initiating graceful shutdown...", sig)
+
+	// Créer un contexte avec timeout pour le shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Arrêter gracefully le serveur gRPC
+	log.Println("Stopping gRPC server...")
+	stopped := make(chan struct{})
+	go func() {
+		loggerRegistrar.GracefulStop()
+		close(stopped)
+	}()
+
+	select {
+	case <-stopped:
+		log.Println("gRPC server stopped gracefully")
+	case <-ctx.Done():
+		log.Println("Shutdown timeout exceeded, forcing stop")
+		loggerRegistrar.Stop()
 	}
 
-	log.Printf("server started ...")
+	// Attendre que le consumer finisse de traiter les messages en cours
+	log.Println("Waiting for consumer to finish processing messages...")
+	time.Sleep(2 * time.Second) // Temps pour que le consumer finisse
 
+	// Fermer les connexions proprement
+	loggerConsumer.Close()
+	logProducer.Close()
+
+	log.Println("Shutdown complete")
 }

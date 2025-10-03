@@ -1,14 +1,15 @@
-package application
+package log
 
 import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
-	"logengine/apps/server/types"
-	"logengine/libs/utils"
 	str "strings"
 	"time"
+
+	"logengine/apps/server/types"
+	"logengine/libs/utils"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -22,8 +23,8 @@ func NewLogService(db *sql.DB) *LogService {
 	return &LogService{datasource: db}
 }
 
-func (s *LogService) Find(inputs *FindApplicationInputs) *[]ApplicationEntity {
-	apps := &[]ApplicationEntity{}
+func (s *LogService) Find(inputs *FindLogInputs) *[]LogEntity {
+	apps := &[]LogEntity{}
 
 	query := "select id, name,key from app where id in(?) and name like ?"
 
@@ -42,7 +43,7 @@ func (s *LogService) Find(inputs *FindApplicationInputs) *[]ApplicationEntity {
 	defer rows.Close()
 
 	for rows.Next() {
-		app := &ApplicationEntity{}
+		app := &LogEntity{}
 
 		if err = rows.Scan(&app.Id, &app.Name, &app.Key); err != nil {
 			log.Fatalf("scan app error %v\n", err)
@@ -54,7 +55,7 @@ func (s *LogService) Find(inputs *FindApplicationInputs) *[]ApplicationEntity {
 	return apps
 }
 
-func (s *LogService) Create(inputs *ApplicationToAdd, createdBy types.User) (*ApplicationEntity, error) {
+func (s *LogService) Create(inputs *FindLogInputs, createdBy types.User) (*LogEntity, error) {
 	log.Printf("create application %v\n inputs", inputs)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -75,7 +76,7 @@ func (s *LogService) Create(inputs *ApplicationToAdd, createdBy types.User) (*Ap
 	key := utils.GenerateStr(20)
 	row := tx.QueryRowContext(ctx, query, id, inputs.Name, key, createdBy.Id)
 
-	app := &ApplicationEntity{}
+	app := &LogEntity{}
 
 	if row.Err() != nil {
 		log.Printf("fail to create application with query %s, error %v\n", query, row.Err())

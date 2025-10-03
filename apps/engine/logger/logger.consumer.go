@@ -2,6 +2,7 @@ package logger
 
 import (
 	"log"
+
 	"logengine/apps/engine/broker"
 	"logengine/libs/utils"
 
@@ -32,4 +33,9 @@ func (lc *LogConsumer) Consume() {
 	log.Println("Starting log consumer...")
 	lc.broker.ConsumeLog()
 	log.Println("Log consumer stopped")
+}
+
+func (lc *LogConsumer) Close() {
+	log.Println("Closing consumer connections...")
+	lc.broker.Close()
 }

@@ -3,6 +3,7 @@ package logger
 import (
 	"database/sql"
 	"log"
+
 	"logengine/apps/engine/broker"
 	logengine_grpc "logengine/apps/engine/logger-definitions"
 	"logengine/libs/utils"
@@ -38,4 +39,9 @@ func (lp *LogProducer) Produce(newLog *logengine_grpc.Log) {
 
 func (lp *LogProducer) GetDB() *sql.DB {
 	return lp.broker.DB
+}
+
+func (lp *LogProducer) Close() {
+	log.Println("Closing producer connections...")
+	lp.broker.Close()
 }

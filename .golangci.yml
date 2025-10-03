@@ -1,0 +1,35 @@
+# Configuration golangci-lint pour LogEngine
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - vendor
+    - node_modules
+
+linters:
+  enable:
+    - gofmt        # Vérifie le formatage
+    - goimports    # Vérifie les imports
+    - govet        # Examine le code Go
+    - errcheck     # Vérifie les erreurs non gérées
+    - staticcheck  # Analyse statique avancée
+    - unused       # Détecte le code non utilisé
+    - gosimple     # Simplifie le code
+    - ineffassign  # Détecte les assignations inutiles
+    - misspell     # Détecte les fautes d'orthographe
+
+linters-settings:
+  gofmt:
+    simplify: true
+
+  goimports:
+    local-prefixes: logengine
+
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

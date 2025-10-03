@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"logengine/apps/server/types"
-	"logengine/libs/utils"
 	str "strings"
 	"time"
+
+	"logengine/apps/server/types"
+	"logengine/libs/utils"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"

@@ -6,10 +6,17 @@ import (
 	"log"
 	"time"
 
+	"logengine/libs/ratelimit"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+)
+
+var (
+	// Rate limiter: 1000 logs par seconde par app
+	logRateLimiter = ratelimit.NewRateLimiter(1000, 1*time.Second)
 )
 
 type AuthInterceptor struct {
@@ -57,6 +64,11 @@ func (a *AuthInterceptor) UnaryInterceptor(
 		}
 		log.Printf("error checking api key: %v", err)
 		return nil, status.Error(codes.Internal, "authentication failed")
+	}
+
+	// Rate limiting par appId
+	if !logRateLimiter.Allow(apiKey) {
+		return nil, status.Error(codes.ResourceExhausted, "rate limit exceeded (max 1000 logs/second)")
 	}
 
 	// Ajouter l'appId au contexte pour l'utiliser dans les handlers

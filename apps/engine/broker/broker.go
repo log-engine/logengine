@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
+
 	logengine_grpc "logengine/apps/engine/logger-definitions"
 	"logengine/libs/datasource"
+	"logengine/libs/retry"
 	"logengine/libs/utils"
-	"time"
 
 	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -34,12 +36,25 @@ func NewBroker(uri string) *Broker {
 }
 
 func (b *Broker) Init() {
-	var err error
+	// Connexion à RabbitMQ avec retry
+	retryConfig := retry.Config{
+		MaxAttempts:  10,
+		InitialDelay: 2 * time.Second,
+		MaxDelay:     30 * time.Second,
+		Multiplier:   1.5,
+		OnRetry: func(attempt int, err error) {
+			log.Printf("Failed to connect to RabbitMQ (attempt %d): %v", attempt, err)
+		},
+	}
 
-	b.conn, err = amqp.Dial(b.uri)
+	err := retry.Do(func() error {
+		var err error
+		b.conn, err = amqp.Dial(b.uri)
+		return err
+	}, retryConfig)
 
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+		log.Fatalf("Failed to connect to RabbitMQ after retries: %v", err)
 	}
 
 	b.initChannel()
@@ -50,12 +65,21 @@ func (b *Broker) Init() {
 
 	b.ch.QueueBind(LOG_QUEUE, LOG_QUEUE, LOG_EXCHANGE, false, nil)
 
+	// Connexion à PostgreSQL avec retry
 	dbUrl := utils.GetEnv("DB_URI")
-	database := datasource.NewDatasource(dbUrl, "postgres")
 
-	b.DB = database.Db
+	err = retry.Do(func() error {
+		database := datasource.NewDatasource(dbUrl, "postgres")
+		b.DB = database.Db
+		// Test de connexion
+		return b.DB.Ping()
+	}, retryConfig)
 
-	log.Println("connected to rabbitmq successfully")
+	if err != nil {
+		log.Fatalf("Failed to connect to PostgreSQL after retries: %v", err)
+	}
+
+	log.Println("connected to rabbitmq and postgresql successfully")
 }
 
 func (b *Broker) initChannel() {
@@ -100,12 +124,26 @@ func (b *Broker) NewLog(lnewLog *logengine_grpc.Log) error {
 
 	log.Printf("new message to publish %v", lnewLog)
 
-	err = b.ch.Publish(LOG_EXCHANGE, LOG_QUEUE, false, false, amqp.Publishing{
-		ContentType: "application/json",
-		Body:        body,
-	})
+	// Retry avec backoff exponentiel
+	retryConfig := retry.Config{
+		MaxAttempts:  3,
+		InitialDelay: 100 * time.Millisecond,
+		MaxDelay:     2 * time.Second,
+		Multiplier:   2.0,
+		OnRetry: func(attempt int, err error) {
+			log.Printf("Failed to publish to RabbitMQ (attempt %d): %v", attempt, err)
+		},
+	}
+
+	err = retry.Do(func() error {
+		return b.ch.Publish(LOG_EXCHANGE, LOG_QUEUE, false, false, amqp.Publishing{
+			ContentType: "application/json",
+			Body:        body,
+		})
+	}, retryConfig)
+
 	if err != nil {
-		return fmt.Errorf("failed to publish message: %v", err)
+		return fmt.Errorf("failed to publish message after retries: %v", err)
 	}
 
 	return nil
@@ -143,25 +181,66 @@ func (b *Broker) ConsumeLog() {
 
 		const query = `insert into log (id, level, pid, hostname, ts, message, "appId") values ($1, $2, $3, $4, $5, $6, $7)`
 
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-
 		ts, err := time.ParseInLocation("2006-01-02T15:04:05.000Z", newLog.Ts, loc)
 		if err != nil {
 			log.Printf("Error parsing date: %v, using current time instead", err)
 			ts = time.Now().UTC()
 		}
 
-		r, err := b.DB.ExecContext(ctx, query, uuid.New().String(), newLog.Level, newLog.Pid, newLog.Hostname, ts, newLog.Message, newLog.AppId)
+		logId := uuid.New().String()
 
-		cancel()
+		// Retry avec backoff exponentiel pour PostgreSQL
+		retryConfig := retry.Config{
+			MaxAttempts:  5,
+			InitialDelay: 500 * time.Millisecond,
+			MaxDelay:     10 * time.Second,
+			Multiplier:   2.0,
+			OnRetry: func(attempt int, err error) {
+				log.Printf("Failed to insert log into PostgreSQL (attempt %d): %v", attempt, err)
+			},
+		}
+
+		err = retry.Do(func() error {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			_, err := b.DB.ExecContext(ctx, query, logId, newLog.Level, newLog.Pid, newLog.Hostname, ts, newLog.Message, newLog.AppId)
+			return err
+		}, retryConfig)
 
 		if err != nil {
-			log.Printf("failed to insert log: %v", err)
+			log.Printf("failed to insert log after retries: %v", err)
+			// TODO: Mettre dans une dead letter queue ou un fichier de backup
 			continue
 		}
 
-		log.Printf("log inserted successfully: %v", r)
+		log.Printf("log inserted successfully: %s", logId)
 	}
 
 	log.Printf("Consumer stopped: channel closed")
+}
+
+// Close ferme proprement les connexions RabbitMQ et PostgreSQL
+func (b *Broker) Close() {
+	log.Println("Closing broker connections...")
+
+	if b.ch != nil {
+		if err := b.ch.Close(); err != nil {
+			log.Printf("Error closing RabbitMQ channel: %v", err)
+		}
+	}
+
+	if b.conn != nil {
+		if err := b.conn.Close(); err != nil {
+			log.Printf("Error closing RabbitMQ connection: %v", err)
+		}
+	}
+
+	if b.DB != nil {
+		if err := b.DB.Close(); err != nil {
+			log.Printf("Error closing PostgreSQL connection: %v", err)
+		}
+	}
+
+	log.Println("Broker connections closed")
 }

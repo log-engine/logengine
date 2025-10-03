@@ -3,9 +3,10 @@ package logger
 import (
 	"context"
 	"log"
-	logengine_grpc "logengine/apps/engine/logger-definitions"
 	"net/http"
 	"time"
+
+	logengine_grpc "logengine/apps/engine/logger-definitions"
 )
 
 func (lg *LoggerServer) AddLog(req context.Context, payload *logengine_grpc.Log) (*logengine_grpc.LogResponse, error) {
