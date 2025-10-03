@@ -29,8 +29,7 @@ func (lp *LogConsumer) Init() {
 }
 
 func (lc *LogConsumer) Consume() {
-	err := lc.broker.ConsumeLog()
-	if err != nil {
-		log.Printf("can't consume log %s", err)
-	}
+	log.Println("Starting log consumer...")
+	lc.broker.ConsumeLog()
+	log.Println("Log consumer stopped")
 }

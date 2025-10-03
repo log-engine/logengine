@@ -90,12 +90,12 @@ func (b *Broker) initQueue(queueName string) error {
 
 func (b *Broker) NewLog(lnewLog *logengine_grpc.Log) error {
 	if b.conn == nil || b.ch == nil {
-		log.Printf("connection or channel is not open")
+		return fmt.Errorf("connection or channel is not open")
 	}
 
 	body, err := json.Marshal(lnewLog)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to marshal log: %v", err)
 	}
 
 	log.Printf("new message to publish %v", lnewLog)
@@ -111,57 +111,57 @@ func (b *Broker) NewLog(lnewLog *logengine_grpc.Log) error {
 	return nil
 }
 
-func (b *Broker) ConsumeLog() error {
+func (b *Broker) ConsumeLog() {
 	if b.conn == nil || b.ch == nil {
-		return fmt.Errorf("connection or channel is not open")
+		log.Fatalf("connection or channel is not open")
+		return
 	}
 
 	msgs, err := b.ch.Consume(LOG_QUEUE, LOG_QUEUE, true, false, false, false, nil)
 	if err != nil {
-		return err
+		log.Fatalf("failed to start consuming: %v", err)
+		return
 	}
 
-	errChan := make(chan error)
+	log.Printf("Starting to consume logs from queue: %s", LOG_QUEUE)
 
-	go func() {
-		for msg := range msgs {
-			log.Printf("new message received from queue %v , %v", LOG_QUEUE, string(msg.Body))
+	// Précharger la location UTC une seule fois
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		log.Fatalf("failed to load UTC location: %v", err)
+		return
+	}
 
-			var newLog logengine_grpc.Log
-			err := json.Unmarshal(msg.Body, &newLog)
-			if err != nil {
-				log.Printf("failed to unmarshal message: %v", err)
-				errChan <- err
-				continue
-			}
+	for msg := range msgs {
+		log.Printf("new message received from queue %v , %v", LOG_QUEUE, string(msg.Body))
 
-			const query = `insert into log (id, level, pid, hostname, ts, message, "appId") values ($1, $2, $3, $4, $5, $6, $7)`
-
-			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-
-			defer cancel()
-
-			loc, _ := time.LoadLocation("UTC")
-
-			ts, err := time.ParseInLocation("2006-01-02T15:04:05.000Z", newLog.Ts, loc)
-
-			if err != nil {
-				log.Printf("Error parsing date: %v", err)
-			}
-
-			r, err := b.DB.ExecContext(ctx, query, uuid.New().String(), newLog.Level, newLog.Pid, newLog.Hostname, ts, newLog.Message, newLog.AppId)
-
-			if err != nil {
-				log.Printf("failed to insert log: %v", err)
-				errChan <- err
-				continue
-			}
-
-			log.Printf("log inserted successfully: %v", r)
-
+		var newLog logengine_grpc.Log
+		if err := json.Unmarshal(msg.Body, &newLog); err != nil {
+			log.Printf("failed to unmarshal message: %v", err)
+			continue
 		}
-	}()
 
-	// Vous pouvez retourner une erreur si elle est reçue sur errChan
-	return <-errChan
+		const query = `insert into log (id, level, pid, hostname, ts, message, "appId") values ($1, $2, $3, $4, $5, $6, $7)`
+
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+		ts, err := time.ParseInLocation("2006-01-02T15:04:05.000Z", newLog.Ts, loc)
+		if err != nil {
+			log.Printf("Error parsing date: %v, using current time instead", err)
+			ts = time.Now().UTC()
+		}
+
+		r, err := b.DB.ExecContext(ctx, query, uuid.New().String(), newLog.Level, newLog.Pid, newLog.Hostname, ts, newLog.Message, newLog.AppId)
+
+		cancel()
+
+		if err != nil {
+			log.Printf("failed to insert log: %v", err)
+			continue
+		}
+
+		log.Printf("log inserted successfully: %v", r)
+	}
+
+	log.Printf("Consumer stopped: channel closed")
 }
