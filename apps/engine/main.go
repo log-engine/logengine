@@ -26,11 +26,16 @@ func main() {
 
 	fmt.Printf("logger-engine open port %s \n", lis.Addr())
 
-	loggerRegistrar := grpc.NewServer()
-
 	logProducer := logger.NewLogProducer()
-
 	logProducer.Init()
+
+	// Créer l'intercepteur d'authentification
+	authInterceptor := logger.NewAuthInterceptor(logProducer.GetDB())
+
+	// Créer le serveur gRPC avec l'intercepteur
+	loggerRegistrar := grpc.NewServer(
+		grpc.UnaryInterceptor(authInterceptor.UnaryInterceptor),
+	)
 
 	loggerServer := logger.NewLoggerServer(logProducer)
 

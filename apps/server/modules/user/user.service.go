@@ -44,12 +44,18 @@ func (s *UserService) CreateUser(input *UserToAdd, performedBy string) (*User, e
 		return nil, err
 	}
 
+	hashedPassword, err := utils.HashP(input.Password)
+	if err != nil {
+		log.Printf("can't hash password: %v", err)
+		return nil, err
+	}
+
 	var row *sql.Row
 
 	if performedBy != "" {
-		row = s.datasource.QueryRowContext(ctx, query, userID, input.Username, utils.HashP(input.Password), input.Role, apps, performedBy)
+		row = s.datasource.QueryRowContext(ctx, query, userID, input.Username, hashedPassword, input.Role, apps, performedBy)
 	} else {
-		row = s.datasource.QueryRowContext(ctx, query, userID, input.Username, utils.HashP(input.Password), input.Role, apps)
+		row = s.datasource.QueryRowContext(ctx, query, userID, input.Username, hashedPassword, input.Role, apps)
 	}
 
 	if row.Err() != nil {

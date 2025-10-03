@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"database/sql"
 	"log"
 	"logengine/apps/engine/broker"
 	logengine_grpc "logengine/apps/engine/logger-definitions"
@@ -30,8 +31,11 @@ func (lp *LogProducer) Init() {
 }
 
 func (lp *LogProducer) Produce(newLog *logengine_grpc.Log) {
-
 	if err := lp.broker.NewLog(newLog); err != nil {
 		log.Printf("can't publish log %s", err)
 	}
+}
+
+func (lp *LogProducer) GetDB() *sql.DB {
+	return lp.broker.DB
 }
