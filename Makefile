@@ -57,7 +57,7 @@ clean:
 	rm -rf .bin/
 	go clean
 
-# Docker
+# Docker - Development
 docker-up:
 	@echo "Démarrage de PostgreSQL et RabbitMQ..."
 	docker-compose up -d
@@ -71,6 +71,32 @@ docker-down:
 
 docker-logs:
 	docker-compose logs -f
+
+# Docker - Production
+docker-build:
+	@echo "Construction des images Docker..."
+	docker build -f Dockerfile.grpc -t logengine-grpc:latest .
+	docker build -f Dockerfile.http -t logengine-http:latest .
+	@echo "Images construites!"
+
+docker-prod-up:
+	@echo "Démarrage de l'environnement de production..."
+	docker-compose -f docker-compose.prod.yml up -d
+	@echo "Environnement de production démarré!"
+	@echo "HTTP API: http://localhost:8080"
+	@echo "gRPC: localhost:30001"
+	@echo "RabbitMQ UI: http://localhost:15672"
+
+docker-prod-down:
+	@echo "Arrêt de l'environnement de production..."
+	docker-compose -f docker-compose.prod.yml down
+
+docker-prod-logs:
+	docker-compose -f docker-compose.prod.yml logs -f
+
+docker-prod-restart:
+	@echo "Redémarrage de l'environnement de production..."
+	docker-compose -f docker-compose.prod.yml restart
 
 # Setup du projet
 setup:
@@ -100,10 +126,17 @@ help:
 	@echo "  make run_http_server   - Lance le serveur HTTP (port 8080)"
 	@echo "  make run_grpc_server   - Lance le serveur gRPC (port 30001)"
 	@echo ""
-	@echo " Docker:"
+	@echo " Docker - Développement:"
 	@echo "  make docker-up         - Démarre PostgreSQL et RabbitMQ"
 	@echo "  make docker-down       - Arrête les services Docker"
 	@echo "  make docker-logs       - Affiche les logs Docker"
+	@echo ""
+	@echo " Docker - Production:"
+	@echo "  make docker-build      - Construit les images Docker"
+	@echo "  make docker-prod-up    - Démarre tous les services (prod)"
+	@echo "  make docker-prod-down  - Arrête tous les services (prod)"
+	@echo "  make docker-prod-logs  - Affiche les logs (prod)"
+	@echo "  make docker-prod-restart - Redémarre les services (prod)"
 	@echo ""
 	@echo " Build:"
 	@echo "  make build             - Compile les deux serveurs"

@@ -23,8 +23,9 @@ func main() {
 	r.Use(middleware.RequestLogger())
 	r.Use(middleware.RateLimitMiddleware())
 
+	// Charger .env seulement en développement (optionnel en production)
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("can't load .env file %s", err)
+		log.Printf("Warning: .env file not found, using environment variables")
 	}
 
 	app.Bootstrap(r)

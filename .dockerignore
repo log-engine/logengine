@@ -1,0 +1,76 @@
+# Git
+.git/
+.gitignore
+.github/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Build artifacts
+.bin/
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+*.test
+
+# Logs
+*.log
+logs/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.envrc
+
+# Node.js (Frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Frontend build
+apps/ui/admin/dist/
+apps/ui/admin/build/
+apps/ui/landing-page/.next/
+apps/ui/landing-page/out/
+.cache/
+
+# Tests
+.coverage
+.testoutput
+*.cov
+*.html
+test.log
+
+# Documentation
+*.md
+docs/
+scripts/
+
+# Docker
+docker-compose.yml
+docker-compose.prod.yml
+Dockerfile.*
+
+# Temporary
+.tmp/
+.stamp/
+.DS_Store
+*.swp
+
+# Claude Code
+.claude/

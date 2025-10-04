@@ -1,0 +1,40 @@
+# Build stage
+FROM golang:1.24-alpine AS builder
+
+# Install protobuf compiler and dependencies
+RUN apk add --no-cache protobuf protobuf-dev make git
+
+WORKDIR /app
+
+# Copy go modules files
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Install protobuf Go plugins
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+# Copy source code
+COPY . .
+
+# Generate protobuf files
+RUN make generate_proto
+
+# Build the gRPC server
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o grpc-server ./apps/engine/main.go
+
+# Final stage
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copy binary from builder
+COPY --from=builder /app/grpc-server .
+
+# Expose gRPC port
+EXPOSE 30001
+
+# Run the server
+CMD ["./grpc-server"]
