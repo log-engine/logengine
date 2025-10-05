@@ -8,6 +8,8 @@ services:
       RABBITMQ_URI: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
     networks:
       - dokploy-network
+    ports:
+      - 30001:30001
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
