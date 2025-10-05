@@ -9,7 +9,7 @@ services:
       ADMIN_USERNAME: ${ADMIN_USERNAME:-logengine}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-logengine}
     networks:
-      - logengine.io-network
+      - dokploy-network
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -19,4 +19,5 @@ services:
       - "traefik.http.services.logengine-http.loadbalancer.server.port=8080"
 
 networks:
-  logengine.io-network:
+  dokploy-network:
+    external: true
