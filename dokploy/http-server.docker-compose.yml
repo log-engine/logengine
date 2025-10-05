@@ -20,4 +20,3 @@ services:
 
 networks:
   logengine.io-network:
-    external: true

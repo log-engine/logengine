@@ -17,7 +17,6 @@ services:
 
 networks:
   logengine.io-network:
-    external: true
 
 volumes:
   rabbitmq_data:
