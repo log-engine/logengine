@@ -3,9 +3,6 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile.grpc
-    environment:
-      DB_URI: postgres://${POSTGRES_USER:-logengine}:${POSTGRES_PASSWORD:-logengine_password}@postgres:5432/${POSTGRES_DB:-logengine}?sslmode=disable
-      RABBITMQ_URI: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
     networks:
       - logengine.io-network
     restart: unless-stopped
