@@ -94,7 +94,7 @@ HTTP_DOMAIN=api.votredomaine.com
 
 ## Réseau partagé
 
-Tous les services utilisent le réseau **logengine.io-network** qui est créé automatiquement par Dokploy. Cela permet aux services de communiquer entre eux :
+Tous les services utilisent le réseau **dokploy-network ** qui est créé automatiquement par Dokploy. Cela permet aux services de communiquer entre eux :
 
 - Le gRPC server peut accéder à PostgreSQL via `postgres:5432`
 - Le gRPC server peut accéder à RabbitMQ via `rabbitmq:5672`
@@ -159,10 +159,10 @@ Redéployez dans l'ordre :
 
 ### Les services ne peuvent pas communiquer
 
-Vérifiez que tous les services sont sur le réseau `logengine.io-network` :
+Vérifiez que tous les services sont sur le réseau `dokploy-network ` :
 
 ```bash
-docker network inspect logengine.io-network
+docker network inspect dokploy-network
 ```
 
 ### PostgreSQL non accessible
@@ -172,7 +172,7 @@ docker network inspect logengine.io-network
 docker ps | grep postgres
 
 # Tester la connexion depuis le réseau
-docker run --rm --network logengine.io-network postgres:15-alpine \
+docker run --rm --network dokploy-network  postgres:15-alpine \
   pg_isready -h postgres -p 5432 -U logengine
 ```
 
@@ -183,7 +183,7 @@ docker run --rm --network logengine.io-network postgres:15-alpine \
 docker ps | grep rabbitmq
 
 # Tester depuis le réseau
-docker run --rm --network logengine.io-network curlimages/curl:latest \
+docker run --rm --network dokploy-network  curlimages/curl:latest \
   curl -u admin:password http://rabbitmq:15672/api/overview
 ```
 

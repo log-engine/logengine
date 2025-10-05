@@ -7,7 +7,7 @@ services:
       DB_URI: postgres://${POSTGRES_USER:-logengine}:${POSTGRES_PASSWORD:-logengine}@postgres:5432/${POSTGRES_DB:-logengine}?sslmode=disable
       RABBITMQ_URI: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
     networks:
-      - logengine.io-network
+      - dokploy-network
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -18,5 +18,5 @@ services:
       - "traefik.http.services.logengine-grpc.loadbalancer.server.scheme=h2c"
 
 networks:
-  logengine.io-network:
+  dokploy-network :
     external: true

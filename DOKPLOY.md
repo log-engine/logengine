@@ -26,7 +26,7 @@ Pour LogEngine, nous recommandons de déployer chaque service séparément dans 
 3. **gRPC Server** - Serveur de collecte de logs
 4. **HTTP Server** - API REST et interface admin
 
-Tous les services communiquent via le réseau `logengine.io-network` créé automatiquement par Dokploy.
+Tous les services communiquent via le réseau `dokploy-network ` créé automatiquement par Dokploy.
 
 ## Guide de déploiement détaillé
 
@@ -162,7 +162,7 @@ curl https://api.votredomaine.com/api/health
        [PostgreSQL]          [RabbitMQ]
          :5432                :5672
 
-    Tous sur le réseau: logengine.io-network
+    Tous sur le réseau: dokploy-network
 ```
 
 ## Accès aux services
@@ -293,10 +293,10 @@ Dokploy gère le firewall automatiquement. Ports ouverts :
 
 ### Les services ne communiquent pas
 
-Vérifiez que tous sont sur `logengine.io-network` :
+Vérifiez que tous sont sur `dokploy-network ` :
 
 ```bash
-docker network inspect logengine.io-network
+docker network inspect dokploy-network
 ```
 
 ### PostgreSQL non accessible
@@ -306,7 +306,7 @@ docker network inspect logengine.io-network
 docker ps | grep postgres
 
 # Tester la connexion depuis le réseau
-docker run --rm --network logengine.io-network postgres:15-alpine \
+docker run --rm --network dokploy-network  postgres:15-alpine \
   pg_isready -h postgres -p 5432 -U logengine
 ```
 
