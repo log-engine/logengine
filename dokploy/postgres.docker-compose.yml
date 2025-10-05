@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-logengine}
+      POSTGRES_USER: ${POSTGRES_USER:-logengine}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-logengine_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-logengine}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - logengine.io-network
+    restart: unless-stopped
+
+networks:
+  logengine.io-network:
+    external: true
+
+volumes:
+  postgres_data:

@@ -1,0 +1,22 @@
+services:
+  grpc-server:
+    build:
+      context: ..
+      dockerfile: Dockerfile.grpc
+    environment:
+      DB_URI: postgres://${POSTGRES_USER:-logengine}:${POSTGRES_PASSWORD:-logengine_password}@postgres:5432/${POSTGRES_DB:-logengine}?sslmode=disable
+      RABBITMQ_URI: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+    networks:
+      - logengine.io-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.logengine-grpc.rule=Host(`${GRPC_DOMAIN:-rpc.logengine.io}`)"
+      - "traefik.http.routers.logengine-grpc.entrypoints=websecure"
+      - "traefik.http.routers.logengine-grpc.tls.certResolver=letsencrypt"
+      - "traefik.http.services.logengine-grpc.loadbalancer.server.port=30001"
+      - "traefik.http.services.logengine-grpc.loadbalancer.server.scheme=h2c"
+
+networks:
+  logengine.io-network:
+    external: true

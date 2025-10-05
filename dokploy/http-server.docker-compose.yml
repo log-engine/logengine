@@ -1,0 +1,23 @@
+services:
+  http-server:
+    build:
+      context: ..
+      dockerfile: Dockerfile.http
+    environment:
+      DB_URI: postgres://${POSTGRES_USER:-logengine}:${POSTGRES_PASSWORD:-logengine_password}@postgres:5432/${POSTGRES_DB:-logengine}?sslmode=disable
+      RABBITMQ_URI: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    networks:
+      - logengine.io-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.logengine-http.rule=Host(`${HTTP_DOMAIN:-api.logengine.io}`)"
+      - "traefik.http.routers.logengine-http.entrypoints=websecure"
+      - "traefik.http.routers.logengine-http.tls.certResolver=letsencrypt"
+      - "traefik.http.services.logengine-http.loadbalancer.server.port=8080"
+
+networks:
+  logengine.io-network:
+    external: true
