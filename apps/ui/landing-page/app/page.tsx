@@ -1,7 +1,13 @@
 "use client"
 
-import ComingSoon from "../ComingSoon"
+import LandingPage from "@/components/landing-page"
+import Navbar from "@/components/navbar"
 
-export default function SyntheticV0PageForDeployment() {
-  return <ComingSoon />
+export default function Home() {
+  return (
+    <>
+      <Navbar />
+      <LandingPage />
+    </>
+  )
 }
