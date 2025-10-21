@@ -1,0 +1,13 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="180" height="180" rx="40" fill="#0a0a0a"/>
+
+  <!-- Terminal prompt symbol (>) -->
+  <path d="M45 62L75 90L45 118" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Command line (—) -->
+  <line x1="85" y1="118" x2="135" y2="118" stroke="#22c55e" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Accent dot (represents active/running status) -->
+  <circle cx="145" cy="45" r="10" fill="#22c55e"/>
+</svg>

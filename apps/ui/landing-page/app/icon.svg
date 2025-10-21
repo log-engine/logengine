@@ -1,0 +1,11 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#0a0a0a"/>
+
+  <!-- Terminal/Log icon in green -->
+  <path d="M8 11L12 15L8 19" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="14" y1="19" x2="20" y2="19" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Accent dot -->
+  <circle cx="23" cy="9" r="2" fill="#22c55e"/>
+</svg>
