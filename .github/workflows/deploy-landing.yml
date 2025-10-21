@@ -38,13 +38,14 @@ jobs:
       - name: Create deployment archive
         run: |
           cd apps/ui/landing-page
-          tar -czf ../../landing-page-deploy.tar.gz \
+          tar -czf landing-page-deploy.tar.gz \
             .next \
             public \
             package.json \
             package-lock.json \
             next.config.mjs \
             ecosystem.config.js
+          mv landing-page-deploy.tar.gz $GITHUB_WORKSPACE/
 
       - name: Deploy to VPS via SSH
         uses: appleboy/scp-action@v0.1.7
@@ -55,6 +56,7 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           source: "landing-page-deploy.tar.gz"
           target: "/tmp/"
+          strip_components: 0
 
       - name: Extract and restart application
         uses: appleboy/ssh-action@v1.0.3
