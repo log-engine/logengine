@@ -1,0 +1,50 @@
+{
+  "name": "@logengine/engine",
+  "version": "1.0.0",
+  "description": "Official Node.js SDK for LogEngine - High-performance log management with gRPC",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "dist/",
+    "proto/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "logging",
+    "log-management",
+    "grpc",
+    "observability",
+    "monitoring",
+    "logengine"
+  ],
+  "author": "LogEngine Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/log-engine/logengine.git",
+    "directory": "sdks/javascript"
+  },
+  "bugs": {
+    "url": "https://github.com/log-engine/logengine/issues"
+  },
+  "homepage": "https://logengine.io",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.11.3",
+    "@grpc/proto-loader": "^0.7.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

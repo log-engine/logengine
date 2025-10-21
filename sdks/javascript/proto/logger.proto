@@ -1,0 +1,26 @@
+syntax="proto3";
+
+package logengine_grpc;
+
+option go_package = "github.com/log-engine/logengine-grpc";
+
+
+message Log {
+  string level = 1;
+  string appId = 2;
+  string message = 3;
+  string pid = 4;
+  string ts = 5;
+  string hostname = 6;
+}
+
+message LogResponse {
+  string code = 1;
+  string message = 2;
+  int32 status = 3;
+}
+
+
+service Logger {
+  rpc addLog(Log) returns (LogResponse) {}
+}
