@@ -5,6 +5,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './layouts';
 import { Dashboard } from './pages';
 import { Login } from './pages/Login';
+import { Applications } from './pages/Applications';
+import { Users } from './pages/Users';
+import { LogExplorer } from './pages/LogExplorer';
 
 const App = () => {
   return (
@@ -24,19 +27,15 @@ const App = () => {
             <Route index element={<Dashboard />} />
 
             <Route path="users">
-              <Route index element={<div>All Users</div>} />
-              <Route path="new" element={<div>Add New User</div>} />
-              <Route path="roles" element={<div>Roles & Permissions</div>} />
+              <Route index element={<Users />} />
             </Route>
 
             <Route path="applications">
-              <Route index element={<div>Applications List</div>} />
+              <Route index element={<Applications />} />
             </Route>
 
             <Route path="logs">
-              <Route index element={<div>Log Explorer</div>} />
-              <Route path="alerts" element={<div>Log Alerts</div>} />
-              <Route path="reports" element={<div>Log Reports</div>} />
+              <Route index element={<LogExplorer />} />
             </Route>
 
             <Route path="settings" element={<div>Settings</div>} />
