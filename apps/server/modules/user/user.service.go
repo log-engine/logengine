@@ -84,10 +84,10 @@ func (s *UserService) CreateUser(input *UserToAdd, performedBy string) (*User, e
 	return user, nil
 }
 
-func (s *UserService) Login(input *LoginInput) (string, error) {
+func (s *UserService) Login(input *LoginInput) (*LoginResponse, error) {
 	log.Printf("login user input %s", input)
 
-	query := `select id, password from "user" where username = $1`
+	query := `select id, password, username, role, apps from "user" where username = $1`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
@@ -97,16 +97,24 @@ func (s *UserService) Login(input *LoginInput) (string, error) {
 
 	if row.Err() != nil {
 		log.Printf("can't login user: %v", row.Err())
-		return "", row.Err()
+		return nil, row.Err()
 	}
 
 	password := ""
 	userId := ""
+	username := ""
+	role := ""
+	apps := []byte{}
 
-	row.Scan(&userId, &password)
+	err := row.Scan(&userId, &password, &username, &role, &apps)
+
+	if err != nil {
+		log.Printf("can't scan user: %v", err)
+		return nil, err
+	}
 
 	if password == "" || userId == "" {
-		return "", fmt.Errorf("wrong password or username")
+		return nil, fmt.Errorf("wrong password or username")
 	}
 
 	log.Printf("hashed password %s", password)
@@ -116,7 +124,7 @@ func (s *UserService) Login(input *LoginInput) (string, error) {
 	isCorrectPwd := utils.CompareP(password, input.Password)
 
 	if isCorrectPwd == false {
-		return "", fmt.Errorf("wrong password or username")
+		return nil, fmt.Errorf("wrong password or username")
 	}
 
 	token := utils.GenerateStr(16)
@@ -130,10 +138,26 @@ func (s *UserService) Login(input *LoginInput) (string, error) {
 
 	if row.Err() != nil {
 		log.Printf("can't create token: %v", row.Err())
-		return "", row.Err()
+		return nil, row.Err()
 	}
 
 	row.Scan(&token)
 
-	return token, nil
+	var userApps []string
+	err = json.Unmarshal(apps, &userApps)
+
+	if err != nil {
+		log.Printf("can't unmarshal apps: %v", err)
+		return nil, err
+	}
+
+	return &LoginResponse{
+		Token: token,
+		User: User{
+			Id:       userId,
+			Username: username,
+			Role:     role,
+			Apps:     userApps,
+		},
+	}, nil
 }

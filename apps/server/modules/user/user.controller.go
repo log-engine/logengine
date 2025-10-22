@@ -51,7 +51,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.service.Login(&expectedBody)
+	loginResponse, err := c.service.Login(&expectedBody)
 
 	if err != nil {
 		errorData["code"] = "UNAUTHORIZED"
@@ -61,9 +61,5 @@ func (c *UserController) Login(ctx *gin.Context) {
 		return
 	}
 
-	data := map[string]string{
-		"token": token,
-	}
-
-	ctx.JSON(http.StatusOK, data)
+	ctx.JSON(http.StatusOK, loginResponse)
 }

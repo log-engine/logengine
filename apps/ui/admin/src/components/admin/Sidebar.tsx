@@ -92,75 +92,83 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
       </div>
       
       <div className="p-4">
-        <SidebarItem 
-          to="/admin" 
-          icon="fas fa-tachometer-alt" 
-          label="Dashboard" 
-          active={path === '/admin'} 
+        <SidebarItem
+          to="/"
+          icon="fas fa-tachometer-alt"
+          label="Dashboard"
+          active={path === '/'}
           isCollapsed={!isOpen}
         />
-        
-        <SidebarItem 
-          to="/admin/users" 
-          icon="fas fa-users" 
-          label="Users" 
-          active={path.includes('/admin/users')} 
+
+        <SidebarItem
+          to="/applications"
+          icon="fas fa-cube"
+          label="Applications"
+          active={path.includes('/applications')}
+          isCollapsed={!isOpen}
+        />
+
+        <SidebarItem
+          to="/users"
+          icon="fas fa-users"
+          label="Users"
+          active={path.includes('/users')}
           isCollapsed={!isOpen}
         >
           {isOpen && (
             <>
-              <SubMenuItem 
-                to="/admin/users" 
-                label="All Users" 
-                active={path === '/admin/users'} 
+              <SubMenuItem
+                to="/users"
+                label="All Users"
+                active={path === '/users'}
               />
-              <SubMenuItem 
-                to="/admin/users/new" 
-                label="Add User" 
-                active={path === '/admin/users/new'} 
+              <SubMenuItem
+                to="/users/new"
+                label="Add User"
+                active={path === '/users/new'}
               />
-              <SubMenuItem 
-                to="/admin/users/roles" 
-                label="Roles & Permissions" 
-                active={path === '/admin/users/roles'} 
+              <SubMenuItem
+                to="/users/roles"
+                label="Roles & Permissions"
+                active={path === '/users/roles'}
               />
             </>
           )}
         </SidebarItem>
-        
-        <SidebarItem 
-          to="/admin/logs" 
-          icon="fas fa-list" 
-          label="Logs" 
-          active={path.includes('/admin/logs')} 
+
+        <SidebarItem
+          to="/logs"
+          icon="fas fa-list"
+          label="Logs"
+          active={path.includes('/logs')}
           isCollapsed={!isOpen}
         >
           {isOpen && (
             <>
-              <SubMenuItem 
-                to="/admin/logs" 
-                label="Log Explorer" 
-                active={path === '/admin/logs'} 
+              <SubMenuItem
+                to="/logs"
+                label="Log Explorer"
+                active={path === '/logs'}
               />
-              <SubMenuItem 
-                to="/admin/logs/alerts" 
-                label="Alerts" 
-                active={path === '/admin/logs/alerts'} 
+              <SubMenuItem
+                to="/logs/alerts"
+                label="Alerts"
+                active={path === '/logs/alerts'}
               />
-              <SubMenuItem 
-                to="/admin/logs/reports" 
-                label="Reports" 
-                active={path === '/admin/logs/reports'} 
+              <SubMenuItem
+                to="/logs/reports"
+                label="Reports"
+                active={path === '/logs/reports'}
               />
             </>
           )}
         </SidebarItem>
-        
-        <SidebarItem 
-          to="/admin/settings" 
-          icon="fas fa-cog" 
-          label="Settings" 
-          active={path.includes('/admin/settings')} 
+
+        <SidebarItem
+          to="/settings"
+          icon="fas fa-cog"
+          label="Settings"
+          active={path.includes('/settings')}
           isCollapsed={!isOpen}
         />
       </div>

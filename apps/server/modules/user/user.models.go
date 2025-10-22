@@ -18,3 +18,8 @@ type LoginInput struct {
 	Username string `json:"username" binding:"required,min=3,max=100"`
 	Password string `json:"password" binding:"required"`
 }
+
+type LoginResponse struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}
