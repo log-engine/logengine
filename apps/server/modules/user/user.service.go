@@ -161,3 +161,44 @@ func (s *UserService) Login(input *LoginInput) (*LoginResponse, error) {
 		},
 	}, nil
 }
+
+func (s *UserService) GetUsers() ([]User, error) {
+	query := `select id, username, role, apps, "createdAt", "updatedAt" from "user" order by "createdAt" desc`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rows, err := s.datasource.QueryContext(ctx, query)
+	if err != nil {
+		log.Printf("can't get users: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []User{}
+
+	for rows.Next() {
+		var user User
+		var apps []byte
+		var createdAt, updatedAt time.Time
+
+		err := rows.Scan(&user.Id, &user.Username, &user.Role, &apps, &createdAt, &updatedAt)
+		if err != nil {
+			log.Printf("can't scan user: %v", err)
+			continue
+		}
+
+		err = json.Unmarshal(apps, &user.Apps)
+		if err != nil {
+			log.Printf("can't unmarshal apps: %v", err)
+			continue
+		}
+
+		user.CreatedAt = createdAt.Format(time.RFC3339)
+		user.UpdatedAt = updatedAt.Format(time.RFC3339)
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}

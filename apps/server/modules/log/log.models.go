@@ -1,18 +1,37 @@
 package log
 
-type FindLogInputs struct {
-	Q         string   `json:"q"`
-	Limit     int      `json:"limit"`
-	Offset    int      `json:"offset"`
-	AppId     string   `json:"appId"`
-	Ids       []string `json:"ids"`
-	Name      string   `json:"name"`
-	StartDate string   `json:"startDate"`
-	EndDate   string   `json:"endDate"`
+type Log struct {
+	Id        string `json:"id"`
+	Level     string `json:"level"`
+	Pid       string `json:"pid"`
+	Hostname  string `json:"hostname"`
+	Ts        string `json:"ts"`
+	Message   string `json:"message"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	AppId     string `json:"appId"`
 }
 
-type LogEntity struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-	Key  string `json:"key"`
+type GetLogsFilters struct {
+	AppId     string `form:"appId"`
+	Level     string `form:"level"`
+	StartDate string `form:"startDate"`
+	EndDate   string `form:"endDate"`
+	Search    string `form:"search"`
+	Page      int    `form:"page"`
+	Limit     int    `form:"limit"`
+}
+
+type PaginatedLogs struct {
+	Data       []Log `json:"data"`
+	Total      int   `json:"total"`
+	Page       int   `json:"page"`
+	Limit      int   `json:"limit"`
+	TotalPages int   `json:"totalPages"`
+}
+
+type LogStats struct {
+	TotalLogs   int            `json:"totalLogs"`
+	LogsToday   int            `json:"logsToday"`
+	LogsByLevel map[string]int `json:"logsByLevel"`
 }

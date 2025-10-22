@@ -2,6 +2,7 @@ package app
 
 import (
 	"logengine/apps/server/modules/application"
+	"logengine/apps/server/modules/log"
 	"logengine/apps/server/modules/user"
 	"logengine/libs/datasource"
 	"logengine/libs/utils"
@@ -24,4 +25,5 @@ func Bootstrap(r *gin.Engine) {
 
 	application.NewApplicationModule(database.Db, r).Bootstrap()
 	user.NewUserModule(database.Db, r).Bootstrap()
+	log.NewLogModule(database.Db, r).Bootstrap()
 }

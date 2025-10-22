@@ -63,3 +63,14 @@ func (c *UserController) Login(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, loginResponse)
 }
+
+func (c *UserController) GetUsers(ctx *gin.Context) {
+	users, err := c.service.GetUsers()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, users)
+}

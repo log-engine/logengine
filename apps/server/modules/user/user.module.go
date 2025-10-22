@@ -22,10 +22,11 @@ func NewUserModule(db *sql.DB, router *gin.Engine) *UserModule {
 
 func (appM *UserModule) Bootstrap() {
 
-	authGroupRouter := appM.router.Group("users")
+	adminGroupRouter := appM.router.Group("users")
 	openGroupRouter := appM.router.Group("api")
 
-	authGroupRouter.Use(middleware.Authorization(appM.db))
+	adminGroupRouter.Use(middleware.Authorization(appM.db))
+	adminGroupRouter.Use(middleware.IsAdmin(appM.db))
 
 	appService := NewUserService(appM.db)
 	appController := NewUserController(appM.router, appService)
@@ -41,6 +42,7 @@ func (appM *UserModule) Bootstrap() {
 
 	appService.CreateUser(&createAdminPayload, "")
 
-	authGroupRouter.POST("/", appController.CreateUser)
+	adminGroupRouter.GET("/", appController.GetUsers)
+	adminGroupRouter.POST("/", appController.CreateUser)
 	openGroupRouter.POST("/login", appController.Login)
 }

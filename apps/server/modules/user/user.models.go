@@ -8,10 +8,13 @@ type UserToAdd struct {
 }
 
 type User struct {
-	Id       string   `json:"id"`
-	Username string   `json:"username"`
-	Role     string   `json:"role"`
-	Apps     []string `json:"apps"`
+	Id        string   `json:"id"`
+	Username  string   `json:"username"`
+	Role      string   `json:"role"`
+	Apps      []string `json:"apps"`
+	CreatedAt string   `json:"createdAt,omitempty"`
+	UpdatedAt string   `json:"updatedAt,omitempty"`
+	AddedBy   string   `json:"addedBy,omitempty"`
 }
 
 type LoginInput struct {
