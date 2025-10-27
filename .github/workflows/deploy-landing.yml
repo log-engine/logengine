@@ -59,7 +59,7 @@ jobs:
           strip_components: 0
 
       - name: Extract and restart application
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
