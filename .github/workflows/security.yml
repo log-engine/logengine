@@ -15,7 +15,7 @@ jobs:
     name: Go Security Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -51,7 +51,7 @@ jobs:
       run:
         working-directory: apps/ui/admin
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -72,7 +72,7 @@ jobs:
       run:
         working-directory: apps/ui/landing-page
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
