@@ -12,8 +12,7 @@ require (
 	github.com/rabbitmq/amqp091-go v1.10.0
 	golang.org/x/crypto v0.42.0
 	golang.org/x/net v0.44.0
-	google.golang.org/grpc v1.75.1
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/grpc v1.76.0
 )
 
 require (
@@ -47,4 +46,5 @@ require (
 	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )
