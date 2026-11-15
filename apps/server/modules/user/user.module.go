@@ -42,7 +42,9 @@ func (appM *UserModule) Bootstrap() {
 
 	appService.CreateUser(&createAdminPayload, "")
 
+	adminGroupRouter.GET("", appController.GetUsers)
 	adminGroupRouter.GET("/", appController.GetUsers)
+	adminGroupRouter.POST("", appController.CreateUser)
 	adminGroupRouter.POST("/", appController.CreateUser)
 	openGroupRouter.POST("/login", appController.Login)
 }

@@ -50,6 +50,7 @@ export function Users() {
       fetchUsers();
       fetchApplications();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -95,11 +96,14 @@ export function Users() {
 
   if (!isAdmin) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow text-center">
-        <i className="fas fa-ban text-red-500 text-5xl mb-4"></i>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
-        <p className="text-gray-600">You don't have permission to view this page.</p>
-        <p className="text-sm text-gray-500 mt-2">Required role: admin</p>
+      <div className="bg-card border border-border p-12 rounded-lg text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-destructive mb-4">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+        </svg>
+        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+        <p className="text-muted-foreground">You don't have permission to view this page.</p>
+        <p className="text-sm text-muted-foreground mt-2">Required role: admin</p>
       </div>
     );
   }
@@ -108,77 +112,90 @@ export function Users() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading users...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading users...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Users</h1>
-          <p className="text-gray-600 mt-1">Manage users and their permissions</p>
+          <h1 className="text-4xl font-bold tracking-tight">Users</h1>
+          <p className="text-muted-foreground mt-2">Manage users and their permissions</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+          className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium flex items-center gap-2"
         >
-          <i className="fas fa-user-plus mr-2"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
           New User
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg">
           {error}
         </div>
       )}
 
       {users.length === 0 ? (
-        <div className="bg-white p-8 rounded-lg shadow text-center">
-          <i className="fas fa-users text-gray-400 text-5xl mb-4"></i>
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No Users Yet</h3>
-          <p className="text-gray-600 mb-4">Create your first user to get started.</p>
+        <div className="bg-card border border-border p-12 rounded-lg text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-muted-foreground mb-4">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <h3 className="text-xl font-semibold mb-2">No Users Yet</h3>
+          <p className="text-muted-foreground mb-4">Create your first user to get started.</p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium"
           >
             Create User
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                   Applications
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                   Created
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-border">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-muted/50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i className="fas fa-user text-blue-600"></i>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{user.username}</div>
-                        <div className="text-sm text-gray-500">{user.id.substring(0, 8)}...</div>
+                      <div>
+                        <div className="text-sm font-medium">{user.username}</div>
+                        <div className="text-sm text-muted-foreground">{user.id.substring(0, 8)}...</div>
                       </div>
                     </div>
                   </td>
@@ -186,23 +203,23 @@ export function Users() {
                     <span
                       className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         user.role === 'admin'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'bg-green-100 text-green-800'
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-secondary text-secondary-foreground'
                       }`}
                     >
                       {user.role}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm">
                       {user.apps.length === 0 ? (
-                        <span className="text-gray-400 italic">No apps assigned</span>
+                        <span className="text-muted-foreground italic">No apps assigned</span>
                       ) : (
-                        <span className="text-gray-700">{user.apps.length} app(s)</span>
+                        <span>{user.apps.length} app(s)</span>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                   </td>
                 </tr>
@@ -214,21 +231,24 @@ export function Users() {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md my-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md my-8">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Create New User</h2>
+              <h2 className="text-xl font-bold">Create New User</h2>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-muted-foreground hover:text-foreground"
               >
-                <i className="fas fa-times"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
             <form onSubmit={handleCreateUser}>
               <div className="mb-4">
-                <label htmlFor="username" className="block text-gray-700 font-semibold mb-2">
+                <label htmlFor="username" className="block font-semibold mb-2">
                   Username
                 </label>
                 <input
@@ -236,7 +256,7 @@ export function Users() {
                   id="username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Enter username"
                   required
                   disabled={isCreating}
@@ -244,7 +264,7 @@ export function Users() {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="password" className="block text-gray-700 font-semibold mb-2">
+                <label htmlFor="password" className="block font-semibold mb-2">
                   Password
                 </label>
                 <input
@@ -252,7 +272,7 @@ export function Users() {
                   id="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Minimum 8 characters"
                   required
                   minLength={8}
@@ -261,14 +281,14 @@ export function Users() {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="role" className="block text-gray-700 font-semibold mb-2">
+                <label htmlFor="role" className="block font-semibold mb-2">
                   Role
                 </label>
                 <select
                   id="role"
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'user' })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                   disabled={isCreating}
                 >
                   <option value="user">User</option>
@@ -278,21 +298,21 @@ export function Users() {
 
               {applications.length > 0 && (
                 <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block font-semibold mb-2">
                     Assign Applications
                   </label>
-                  <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto">
+                  <div className="border border-border rounded-md p-3 max-h-40 overflow-y-auto bg-muted/20">
                     {applications.map((app) => (
-                      <div key={app.id} className="flex items-center mb-2">
+                      <div key={app.id} className="flex items-center mb-2 last:mb-0">
                         <input
                           type="checkbox"
                           id={`app-${app.id}`}
                           checked={formData.apps?.includes(app.id)}
                           onChange={() => toggleAppAssignment(app.id)}
-                          className="mr-2"
+                          className="mr-2 accent-primary"
                           disabled={isCreating}
                         />
-                        <label htmlFor={`app-${app.id}`} className="text-sm text-gray-700">
+                        <label htmlFor={`app-${app.id}`} className="text-sm">
                           {app.name}
                         </label>
                       </div>
@@ -301,18 +321,18 @@ export function Users() {
                 </div>
               )}
 
-              <div className="flex justify-end space-x-3">
+              <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
                   disabled={isCreating}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
                   disabled={isCreating}
                 >
                   {isCreating ? 'Creating...' : 'Create User'}

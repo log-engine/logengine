@@ -29,6 +29,6 @@ func (appM *ApplicationModule) Bootstrap() {
 	appService := NewApplicationService(appM.db)
 	appController := NewApplicationController(appM.router, appService)
 
-	userGroupRouter.GET("/", appController.FindApps)
-	adminGroupRouter.POST("/", appController.CreateApp)
+	userGroupRouter.GET("", appController.FindApps)
+	adminGroupRouter.POST("", appController.CreateApp)
 }

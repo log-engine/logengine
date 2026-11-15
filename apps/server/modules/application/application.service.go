@@ -3,9 +3,7 @@ package application
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
-	str "strings"
 	"time"
 
 	"logengine/apps/server/types"
@@ -23,21 +21,19 @@ func NewApplicationService(db *sql.DB) *ApplicationService {
 	return &ApplicationService{datasource: db}
 }
 
-func (s *ApplicationService) Find(inputs *FindApplicationInputs) *[]ApplicationEntity {
+func (s *ApplicationService) Find() *[]ApplicationEntity {
 	apps := &[]ApplicationEntity{}
 
-	query := "select id, name,key from app where id in(?) and name like ?"
-
-	fmt.Printf("find application with inputs %v, query %s\n", inputs, query)
+	query := "select id,name,key from app"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
 
-	rows, err := s.datasource.QueryContext(ctx, query, str.Join(inputs.Ids, ","), inputs.Q)
+	rows, err := s.datasource.QueryContext(ctx, query)
 
 	if err != nil {
-		log.Fatalf("fail to query application with query %s, error %v\n", query, err.Error())
+		log.Printf("fail to query application with query %s, error %v\n", query, err.Error())
 	}
 
 	defer rows.Close()
@@ -46,7 +42,7 @@ func (s *ApplicationService) Find(inputs *FindApplicationInputs) *[]ApplicationE
 		app := &ApplicationEntity{}
 
 		if err = rows.Scan(&app.Id, &app.Name, &app.Key); err != nil {
-			log.Fatalf("scan app error %v\n", err)
+			log.Printf("scan app error %v\n", err)
 		}
 
 		*apps = append(*apps, *app)
@@ -64,7 +60,7 @@ func (s *ApplicationService) Create(inputs *ApplicationToAdd, createdBy types.Us
 	tx, err := s.datasource.BeginTx(ctx, nil)
 
 	if err != nil {
-		log.Fatalf("fail to begin transaction %v\n", err)
+		log.Printf("fail to begin transaction %v\n", err)
 		return nil, err
 	}
 
@@ -84,7 +80,7 @@ func (s *ApplicationService) Create(inputs *ApplicationToAdd, createdBy types.Us
 	}
 
 	if err := row.Scan(&app.Id, &app.Key, &app.Name); err != nil {
-		log.Fatalf("failed to scan application: %v", err)
+		log.Printf("failed to scan application: %v", err)
 		return nil, err
 	}
 
@@ -100,7 +96,7 @@ func (s *ApplicationService) Create(inputs *ApplicationToAdd, createdBy types.Us
 	rowu, err := s.datasource.ExecContext(ctx, query, apps, createdBy.Id)
 
 	if err != nil {
-		log.Fatalf("fail to update user with query %s, error %v\n", query, err)
+		log.Printf("fail to update user with query %s, error %v\n", query, err)
 		return nil, err
 	}
 
@@ -110,7 +106,7 @@ func (s *ApplicationService) Create(inputs *ApplicationToAdd, createdBy types.Us
 	}
 
 	if err := tx.Commit(); err != nil {
-		log.Fatalf("fail to commit transaction %v\n", err)
+		log.Printf("fail to commit transaction %v\n", err)
 		return nil, err
 	}
 

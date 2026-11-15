@@ -24,12 +24,11 @@ func NewApplicationController(router *gin.Engine, appService *ApplicationService
 }
 
 func (c *ApplicationController) FindApps(ctx *gin.Context) {
-	q, exist := ctx.GetQuery("q")
+	q, _ := ctx.GetQuery("q")
 
-	fmt.Println(q)
-	fmt.Println(exist)
+	fmt.Println("find applications queries", q)
 
-	apps := c.service.Find(&FindApplicationInputs{Q: q, Ids: []string{"A", "B"}})
+	apps := c.service.Find()
 
 	data, err := json.Marshal(apps)
 
@@ -37,6 +36,7 @@ func (c *ApplicationController) FindApps(ctx *gin.Context) {
 		fmt.Printf("can't marchal response %v \n", err)
 		data, _ = json.Marshal(&logengineHTTP.ApiResponse{Code: "SERVER_ERROR"})
 		ctx.Data(http.StatusBadGateway, "application/json", data)
+		return
 	}
 
 	ctx.Data(http.StatusOK, "application/json", data)

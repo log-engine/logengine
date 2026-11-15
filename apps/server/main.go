@@ -20,6 +20,7 @@ func main() {
 	r := gin.Default()
 	gin.SetMode(gin.DebugMode)
 
+	r.Use(middleware.CORS())
 	r.Use(middleware.RequestLogger())
 	r.Use(middleware.RateLimitMiddleware())
 

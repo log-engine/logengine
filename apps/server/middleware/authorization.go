@@ -15,6 +15,12 @@ import (
 
 func Authorization(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Skip authentication for OPTIONS requests (CORS preflight)
+		if c.Request.Method == "OPTIONS" {
+			c.Next()
+			return
+		}
+
 		authorization := c.GetHeader("Authorization")
 
 		log.Printf("authorization: %v", authorization)

@@ -15,7 +15,13 @@ import (
 
 func IsAdmin(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		me := c.MustGet("me").(types.User)
+		// Skip authentication for OPTIONS requests (CORS preflight)
+		if c.Request.Method == "OPTIONS" {
+			c.Next()
+			return
+		}
+
+		me, _ := c.MustGet("me").(types.User)
 
 		if me.Id == "" {
 			c.AbortWithStatus(http.StatusUnauthorized)

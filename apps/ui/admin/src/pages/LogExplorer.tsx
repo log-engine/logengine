@@ -7,11 +7,11 @@ import { format } from 'date-fns';
 const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error', 'fatal'];
 
 const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
-  debug: 'bg-gray-100 text-gray-800',
-  info: 'bg-blue-100 text-blue-800',
-  warn: 'bg-yellow-100 text-yellow-800',
-  error: 'bg-red-100 text-red-800',
-  fatal: 'bg-purple-100 text-purple-800',
+  debug: 'bg-muted text-muted-foreground',
+  info: 'bg-primary/10 text-primary',
+  warn: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  error: 'bg-destructive/10 text-destructive',
+  fatal: 'bg-destructive text-destructive-foreground',
 };
 
 export function LogExplorer() {
@@ -57,10 +57,12 @@ export function LogExplorer() {
 
   useEffect(() => {
     fetchApplications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const handleFilterChange = (key: keyof LogFilters, value: any) => {
@@ -84,22 +86,22 @@ export function LogExplorer() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Log Explorer</h1>
-        <p className="text-gray-600 mt-1">Search and filter application logs</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-4xl font-bold tracking-tight">Log Explorer</h1>
+        <p className="text-muted-foreground mt-2">Search and filter application logs</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow mb-4">
+      <div className="bg-card border border-border rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Application Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Application</label>
+            <label className="block text-sm font-medium mb-2">Application</label>
             <select
               value={filters.appId || ''}
               onChange={(e) => handleFilterChange('appId', e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">All Applications</option>
               {applications.map((app) => (
@@ -112,11 +114,11 @@ export function LogExplorer() {
 
           {/* Level Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+            <label className="block text-sm font-medium mb-2">Level</label>
             <select
               value={filters.level || ''}
               onChange={(e) => handleFilterChange('level', e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">All Levels</option>
               {LOG_LEVELS.map((level) => (
@@ -129,50 +131,49 @@ export function LogExplorer() {
 
           {/* Start Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <label className="block text-sm font-medium mb-2">Start Date</label>
             <input
               type="datetime-local"
               value={filters.startDate || ''}
               onChange={(e) => handleFilterChange('startDate', e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
 
           {/* End Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <label className="block text-sm font-medium mb-2">End Date</label>
             <input
               type="datetime-local"
               value={filters.endDate || ''}
               onChange={(e) => handleFilterChange('endDate', e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
         </div>
 
         {/* Search Bar */}
         <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Search Message</label>
-          <div className="flex space-x-2">
+          <label className="block text-sm font-medium mb-2">Search Message</label>
+          <div className="flex gap-3">
             <input
               type="text"
               value={filters.search || ''}
               onChange={(e) => handleFilterChange('search', e.target.value || undefined)}
               placeholder="Search in log messages..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <button
               onClick={clearFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              className="px-6 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors font-medium"
             >
-              <i className="fas fa-redo mr-2"></i>
               Clear
             </button>
           </div>
         </div>
 
         {/* Results Info */}
-        <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
+        <div className="mt-4 flex justify-between items-center text-sm text-muted-foreground">
           <span>
             Showing {logs.length} of {total} log(s)
           </span>
@@ -181,39 +182,53 @@ export function LogExplorer() {
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg">
           {error}
         </div>
       )}
 
       {/* Logs List */}
       {isLoading ? (
-        <div className="flex items-center justify-center h-64 bg-white rounded-lg shadow">
+        <div className="flex items-center justify-center h-64 bg-card border border-border rounded-lg">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading logs...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading logs...</p>
           </div>
         </div>
       ) : logs.length === 0 ? (
-        <div className="bg-white p-8 rounded-lg shadow text-center">
-          <i className="fas fa-file-alt text-gray-400 text-5xl mb-4"></i>
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No Logs Found</h3>
-          <p className="text-gray-600">Try adjusting your filters or check back later.</p>
+        <div className="bg-card border border-border p-12 rounded-lg text-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="64"
+            height="64"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="mx-auto text-muted-foreground mb-4"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          <h3 className="text-xl font-semibold mb-2">No Logs Found</h3>
+          <p className="text-muted-foreground">Try adjusting your filters or check back later.</p>
         </div>
       ) : (
         <div className="space-y-2">
           {logs.map((log) => (
             <div
               key={log.id}
-              className="bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+              className="bg-card border border-border rounded-lg hover:border-primary/50 transition-colors"
             >
               <div
                 className="p-4 cursor-pointer"
                 onClick={() => setExpandedLog(expandedLog === log.id ? null : log.id)}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span
                         className={`px-2 py-1 text-xs font-semibold rounded ${
                           LOG_LEVEL_COLORS[log.level as LogLevel]
@@ -221,37 +236,48 @@ export function LogExplorer() {
                       >
                         {log.level.toUpperCase()}
                       </span>
-                      <span className="text-xs text-gray-500">{getAppName(log.appId)}</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">{getAppName(log.appId)}</span>
+                      <span className="text-xs text-muted-foreground">
                         {format(new Date(log.ts), 'yyyy-MM-dd HH:mm:ss')}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-800 font-mono">{log.message}</p>
+                    <p className="text-sm font-mono break-all">{log.message}</p>
                   </div>
-                  <i
-                    className={`fas fa-chevron-${expandedLog === log.id ? 'up' : 'down'} text-gray-400 ml-4`}
-                  ></i>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={`text-muted-foreground transition-transform ${expandedLog === log.id ? 'rotate-180' : ''}`}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </div>
               </div>
 
               {expandedLog === log.id && (
-                <div className="px-4 pb-4 border-t border-gray-200 pt-4 bg-gray-50">
+                <div className="px-4 pb-4 border-t border-border pt-4 bg-muted/50">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-semibold text-gray-700">ID:</span>
-                      <p className="text-gray-600 font-mono">{log.id}</p>
+                      <span className="font-semibold">ID:</span>
+                      <p className="text-muted-foreground font-mono break-all">{log.id}</p>
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">PID:</span>
-                      <p className="text-gray-600 font-mono">{log.pid || 'N/A'}</p>
+                      <span className="font-semibold">PID:</span>
+                      <p className="text-muted-foreground font-mono">{log.pid || 'N/A'}</p>
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">Hostname:</span>
-                      <p className="text-gray-600 font-mono">{log.hostname || 'N/A'}</p>
+                      <span className="font-semibold">Hostname:</span>
+                      <p className="text-muted-foreground font-mono">{log.hostname || 'N/A'}</p>
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">Created:</span>
-                      <p className="text-gray-600">{format(new Date(log.createdAt), 'PPpp')}</p>
+                      <span className="font-semibold">Created:</span>
+                      <p className="text-muted-foreground">{format(new Date(log.createdAt), 'PPpp')}</p>
                     </div>
                   </div>
                 </div>
@@ -263,17 +289,19 @@ export function LogExplorer() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-6 flex justify-center space-x-2">
+        <div className="flex justify-center gap-2">
           <button
             onClick={() => handleFilterChange('page', Math.max(1, (filters.page || 1) - 1))}
             disabled={filters.page === 1}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-card border border-border rounded-md hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <i className="fas fa-chevron-left"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
 
           {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-            let pageNum;
+            let pageNum: number;
             if (totalPages <= 5) {
               pageNum = i + 1;
             } else if ((filters.page || 1) <= 3) {
@@ -288,10 +316,10 @@ export function LogExplorer() {
               <button
                 key={pageNum}
                 onClick={() => handleFilterChange('page', pageNum)}
-                className={`px-4 py-2 border rounded-lg ${
+                className={`px-4 py-2 border rounded-md font-medium transition-colors ${
                   filters.page === pageNum
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white border-gray-300 hover:bg-gray-50'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-card border-border hover:bg-accent hover:text-accent-foreground'
                 }`}
               >
                 {pageNum}
@@ -302,9 +330,11 @@ export function LogExplorer() {
           <button
             onClick={() => handleFilterChange('page', Math.min(totalPages, (filters.page || 1) + 1))}
             disabled={filters.page === totalPages}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-card border border-border rounded-md hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <i className="fas fa-chevron-right"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </button>
         </div>
       )}
